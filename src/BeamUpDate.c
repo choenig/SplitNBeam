@@ -17,8 +17,7 @@
 #define OFFSET 14
 
 //Prototypes
-void getTimeDigits(struct tm *t);
-void setTimeDigits();
+void setTimeDigits(struct tm * t);
 void predictNextDigits(struct tm *t);
 void animate_layer(Layer *layer, GRect start, GRect finish, int duration, int delay);
 void setupTextLayer(TextLayer *layer, GRect location, GColor b_colour, GColor t_colour, ResHandle f_handle, GTextAlignment alignment);
@@ -31,10 +30,6 @@ static int HTDigit = 0, HTprev = 0,
            HUDigit = 0, HUprev = 0,
            MTDigit = 0, MTprev = 0,
            MUDigit = 0, MUprev = 0;
-static char HTText[] = "0", HUText[] = "0",
-            colonText[] = ":",
-            MTText[] = "0", MUText[] = "0",
-            dateText[] = "Mon 01";
 
 /**
  * Handle tick function
@@ -97,10 +92,8 @@ static void handle_tick(struct tm *t, TimeUnits units_changed)
     }
     else if(seconds == 0)
     {
-        getTimeDigits(t);
-
         //Set the time off screen
-        setTimeDigits();
+        setTimeDigits(t);
 
         //Animate stuff back into place
         if((MUDigit != MUprev) || (DEBUG))
@@ -210,7 +203,7 @@ static void window_load(Window *window) {
     time_t temp;
     temp = time(NULL);
     t = localtime(&temp);
-    getTimeDigits(t);
+    setTimeDigits(t);
 
     //Stop 'all change' on first minute
     MUprev = MUDigit;
@@ -218,7 +211,6 @@ static void window_load(Window *window) {
     HUprev = HUDigit;
     HTprev = HTDigit;
 
-    setTimeDigits();
 }
 
 /**
@@ -283,6 +275,8 @@ int main(void) {
  ***************************************************************************8
  */
 
+static char dateText[] = "Mon 01";
+
 /**
  * Function to get time digits
  */
@@ -304,8 +298,16 @@ void getTimeDigits(struct tm *t)
 /**
  * Function to set the time and date digits on the TextLayers
  */
-void setTimeDigits() 
+void setTimeDigits(struct tm *t)
 {
+    getTimeDigits(t);
+
+    static char HTText[] = "0";
+    static char HUText[] = "0";
+    static char colonText[] = ":";
+    static char MTText[] = "0";
+    static char MUText[] = "0";
+
     //Copy digits
     HTText[0] = '0' + HTDigit;
     HUText[0] = '0' + HUDigit;
