@@ -45,6 +45,18 @@ static void handle_tick(struct tm *t, TimeUnits units_changed)
     //Get the time
     const int seconds = t->tm_sec;
      
+    const int curQ  = (int)seconds / 15;
+    const int prevQ = curQ == 0 ? 4 : curQ - 1;
+
+    const int fromX = prevQ * 36;
+    const int tillX = curQ  * 36;
+
+    static bool firstRun = true;
+    if (firstRun) {
+        animate_layer(inverter_layer_get_layer(bottomInvLayer), GRect(0, 105, 0, 5), GRect(0, 105, tillX, 5), 500, 0);
+        firstRun = false;
+    }
+
     //Bottom suface
     if(seconds == 15)
     {
