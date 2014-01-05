@@ -29,10 +29,16 @@ void animateLayer(Layer *layer, GRect start, GRect finish, int duration, int del
 //Globals
 static TextLayer *HTLayer, *HULayer, *colonLayer, *MTLayer, *MULayer, *dateLayer, * dayLayer;
 static InverterLayer *HTInvLayer, *HUInvLayer, *MTInvLayer, *MUInvLayer, *bottomInvLayer;
-static int HTDigit = 0, HTprev = 0, 
-           HUDigit = 0, HUprev = 0,
-           MTDigit = 0, MTprev = 0,
-           MUDigit = 0, MUprev = 0;
+
+struct TimeDigits {
+    int HTDigit;
+    int HUDigit;
+    int MTDigit;
+    int MUDigit;
+};
+
+static struct TimeDigits curDigits  = {0,0,0,0};
+static struct TimeDigits prevDigits = {0,0,0,0};
 
 /**
  * Handle tick function
@@ -66,28 +72,28 @@ static void handle_tick(struct tm *t, TimeUnits units_changed)
         predictNextDigits(t); //CALLS GETTIMEDIGITS()
 
         //Only change minutes units if its changed
-        if((MUDigit != MUprev) || (DEBUG))
+        if((curDigits.MUDigit != prevDigits.MUDigit) || (DEBUG))
         {
             animateLayer(inverter_layer_get_layer(MUInvLayer), GRect(MUX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(MUX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
             animateLayer(text_layer_get_layer(MULayer), GRect(MUX, TIMEY, 50, 60), GRect(MUX, -50, 50, 60), 200, 700);
         }
 
         //Only change minutes tens if its changed
-        if((MTDigit != MTprev) || (DEBUG))
+        if((curDigits.MTDigit != prevDigits.MTDigit) || (DEBUG))
         {
             animateLayer(inverter_layer_get_layer(MTInvLayer), GRect(MTX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(MTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
             animateLayer(text_layer_get_layer(MTLayer), GRect(MTX, TIMEY, 50, 60), GRect(MTX, -50, 50, 60), 200, 700);
         }
 
         //Only change hours units if its changed
-        if((HUDigit != HUprev) || (DEBUG))
+        if((curDigits.HUDigit != prevDigits.HUDigit) || (DEBUG))
         {
             animateLayer(inverter_layer_get_layer(HUInvLayer), GRect(HUX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(HUX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
             animateLayer(text_layer_get_layer(HULayer), GRect(HUX, TIMEY, 50, 60), GRect(HUX, -50, 50, 60), 200, 700);
         }
 
         //Only change hours tens if its changed
-        if((HTDigit != HTprev) || (DEBUG))
+        if((curDigits.HTDigit != prevDigits.HTDigit) || (DEBUG))
         {
             animateLayer(inverter_layer_get_layer(HTInvLayer), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
             animateLayer(text_layer_get_layer(HTLayer), GRect(HTX, TIMEY, 50, 60), GRect(HTX, -50, 50, 60), 200, 700);
@@ -99,30 +105,27 @@ static void handle_tick(struct tm *t, TimeUnits units_changed)
         setTimeDigits(t);
 
         //Animate stuff back into place
-        if((MUDigit != MUprev) || (DEBUG))
+        if((curDigits.MUDigit != prevDigits.MUDigit) || (DEBUG))
         {
             animateLayer(text_layer_get_layer(MULayer), GRect(MUX, -50, 50, 60), GRect(MUX, TIMEY, 50, 60), 200, 100);
             animateLayer(inverter_layer_get_layer(MUInvLayer), GRect(MUX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(MUX+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
-            MUprev = MUDigit;   //reset the thing
         }
-        if((MTDigit != MTprev) || (DEBUG))
+        if((curDigits.MTDigit != prevDigits.MTDigit) || (DEBUG))
         {
             animateLayer(text_layer_get_layer(MTLayer), GRect(MTX, -50, 50, 60), GRect(MTX, TIMEY, 50, 60), 200, 100);
             animateLayer(inverter_layer_get_layer(MTInvLayer), GRect(MTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(MTX+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
-            MTprev = MTDigit;
         }
-        if((HUDigit != HUprev) || (DEBUG))
+        if((curDigits.HUDigit != prevDigits.HUDigit) || (DEBUG))
         {
             animateLayer(text_layer_get_layer(HULayer), GRect(HUX, -50, 50, 60), GRect(HUX, TIMEY, 50, 60), 200, 100);
             animateLayer(inverter_layer_get_layer(HUInvLayer), GRect(HUX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(HUX+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
-            HUprev = HUDigit;
         }
-        if((HTDigit != HTprev) || (DEBUG))
+        if((curDigits.HTDigit != prevDigits.HTDigit) || (DEBUG))
         {
             animateLayer(text_layer_get_layer(HTLayer), GRect(HTX, -50, 50, 60), GRect(HTX, TIMEY, 50, 60), 200, 100);
             animateLayer(inverter_layer_get_layer(HTInvLayer), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
-            HTprev = HTDigit;
         }
+        prevDigits = curDigits;
     }
 
     //Bottom suface
@@ -189,10 +192,7 @@ static void window_load(Window *window)
     setDate(t);
 
     //Stop 'all change' on first minute
-    MUprev = MUDigit;
-    MTprev = MTDigit;
-    HUprev = HUDigit;
-    HTprev = HTDigit;
+    prevDigits = curDigits;
 }
 
 /**
@@ -266,16 +266,18 @@ int main(void) {
 /**
  * Function to get time digits
  */
-void getTimeDigits(struct tm * t)
+struct TimeDigits getTimeDigits(struct tm * t)
 {
     char txt[] = "00:00";
     strftime(txt, sizeof(txt), clock_is_24h_style() ? "%H:%M" : "%I:%M", t);
 
     //Get digits
-    HTDigit = txt[0] - '0';
-    HUDigit = txt[1] - '0';
-    MTDigit = txt[3] - '0';
-    MUDigit = txt[4] - '0';
+    struct TimeDigits retval;
+    retval.HTDigit = txt[0] - '0';
+    retval.HUDigit = txt[1] - '0';
+    retval.MTDigit = txt[3] - '0';
+    retval.MUDigit = txt[4] - '0';
+    return retval;
 }
 
 /**
@@ -283,7 +285,7 @@ void getTimeDigits(struct tm * t)
  */
 void setTimeDigits(struct tm * t)
 {
-    getTimeDigits(t);
+    curDigits = getTimeDigits(t);
 
     static char HTText[] = "0";
     static char HUText[] = "0";
@@ -292,10 +294,10 @@ void setTimeDigits(struct tm * t)
     static char MUText[] = "0";
 
     //Copy digits
-    HTText[0] = '0' + HTDigit;
-    HUText[0] = '0' + HUDigit;
-    MTText[0] = '0' + MTDigit;
-    MUText[0] = '0' + MUDigit;
+    HTText[0] = '0' + curDigits.HTDigit;
+    HUText[0] = '0' + curDigits.HUDigit;
+    MTText[0] = '0' + curDigits.MTDigit;
+    MUText[0] = '0' + curDigits.MUDigit;
 
     //Fix digits for debugging purposes
     if(DEBUG)
@@ -348,7 +350,7 @@ void predictNextDigits(struct tm *t)
     nextTime.tm_min += 1;
     mktime(&nextTime);
 
-    getTimeDigits(&nextTime);
+    curDigits = getTimeDigits(&nextTime);
 }
 
 /**
