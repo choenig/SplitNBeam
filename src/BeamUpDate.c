@@ -340,35 +340,12 @@ void setTimeDigits(struct tm *t)
  * will not fire!
  * The solution is to advance the ones about to change pre-emptively
  */
-void predictNextDigits(struct tm *t) {
-    //These will be for the previous minute at 59 seconds
-    getTimeDigits(t);
-
-    //Fix hours tens
-    if
-            (
-             ((HTDigit == 0) && (HUDigit == 9) && (MTDigit == 5) && (MUDigit == 9)) //09:59 --> 10:00
-             || ((HTDigit == 1) && (HUDigit == 9) && (MTDigit == 5) && (MUDigit == 9))   //19:59 --> 20:00
-             || ((HTDigit == 2) && (HUDigit == 3) && (MTDigit == 5) && (MUDigit == 9))   //23:59 --> 00:00
-             )
-    {
-        HTDigit++;
-    }
-
-    //Fix hours units
-    if((MTDigit == 5) && (MUDigit == 9))
-    {
-        HUDigit++;
-    }
-
-    //Fix minutes tens
-    if(MUDigit == 9)    //Minutes Tens about to change
-    {
-        MTDigit++;
-    }
-
-    //Finally fix minutes units
-    MUDigit++;
+void predictNextDigits(struct tm *t)
+{
+    struct tm nextTime = *t;
+    nextTime.tm_min += 1;
+    mktime(&nextTime);
+    getTimeDigits(&nextTime);
 }
 
 /**
