@@ -21,6 +21,7 @@
 
 //Prototypes
 void setTimeDigits(struct tm * t);
+void setDate(struct tm * t);
 void predictNextDigits(struct tm *t);
 void animateLayer(Layer *layer, GRect start, GRect finish, int duration, int delay);
 
@@ -95,6 +96,7 @@ static void handle_tick(struct tm *t, TimeUnits units_changed)
     {
         //Set the time off screen
         setTimeDigits(t);
+        setDate(t);
 
         //Animate stuff back into place
         if((MUDigit != MUprev) || (DEBUG))
@@ -178,6 +180,7 @@ static void window_load(Window *window)
     const time_t now = time(0);
     struct tm * t = localtime(&now);
     setTimeDigits(t);
+    setDate(t);
 
     //Stop 'all change' on first minute
     MUprev = MUDigit;
@@ -253,12 +256,10 @@ int main(void) {
  ***************************************************************************8
  */
 
-static char dateText[] = "Mon 01";
-
 /**
  * Function to get time digits
  */
-void getTimeDigits(struct tm *t)
+void getTimeDigits(struct tm * t)
 {
     char txt[] = "00:00";
     strftime(txt, sizeof(txt), clock_is_24h_style() ? "%H:%M" : "%I:%M", t);
@@ -268,9 +269,6 @@ void getTimeDigits(struct tm *t)
     HUDigit = txt[1] - '0';
     MTDigit = txt[3] - '0';
     MUDigit = txt[4] - '0';
-
-    //Get date
-    strftime(dateText, sizeof(dateText), "%a %d", t);	//Sun 01
 }
 
 /**
@@ -307,8 +305,14 @@ void setTimeDigits(struct tm * t)
     text_layer_set_text(colonLayer, colonText);
     text_layer_set_text(MTLayer, MTText);
     text_layer_set_text(MULayer, MUText);
-    
-    //Set date
+}
+
+void setDate(struct tm * t)
+{
+    static char dateText[] = "Mon xx";
+    strftime(dateText, sizeof(dateText), "%a %d", t);	//Sun 01
+
+    //Set date to TextLayer
     text_layer_set_text(dateLayer, dateText);
 }
 
