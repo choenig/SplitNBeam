@@ -20,7 +20,6 @@
 void setTimeDigits(struct tm * t);
 void predictNextDigits(struct tm *t);
 void animate_layer(Layer *layer, GRect start, GRect finish, int duration, int delay);
-void setupTextLayer(TextLayer *layer, GRect location, GColor b_colour, GColor t_colour, ResHandle f_handle, GTextAlignment alignment);
 
 //Globals
 static TextLayer *HTLayer, *HULayer, *colonLayer, *MTLayer, *MULayer, *dateLayer;
@@ -129,6 +128,16 @@ static void handle_tick(struct tm *t, TimeUnits units_changed)
     }
 }
 
+static void setupTextLayer(Layer * rootLayer, TextLayer ** layer, GRect location, ResHandle f_handle, GTextAlignment alignment)
+{
+    *layer = text_layer_create(location);
+    text_layer_set_background_color(*layer, GColorClear);
+    text_layer_set_text_color(*layer, GColorWhite);
+    text_layer_set_font(*layer, fonts_load_custom_font(f_handle));
+    text_layer_set_text_alignment(*layer, alignment);
+    layer_add_child(rootLayer, (Layer*) *layer);
+}
+
 /**
  * Load window members
  */
@@ -141,47 +150,13 @@ static void window_load(Window *window)
     ResHandle sm_f_handle = resource_get_handle(RESOURCE_ID_FONT_IMAGINE_24);
 
     //Allocate text layers
-    HTLayer = text_layer_create(GRect(HTX, 53, 50, 60));
-    text_layer_set_background_color(HTLayer, GColorClear);
-    text_layer_set_text_color(HTLayer, GColorWhite);
-    text_layer_set_font(HTLayer, fonts_load_custom_font(f_handle));
-    text_layer_set_text_alignment(HTLayer, GTextAlignmentRight);
-    layer_add_child(window_get_root_layer(window), (Layer*) HTLayer);
-
-    HULayer = text_layer_create(GRect(HUX, 53, 50, 60));
-    text_layer_set_background_color(HULayer, GColorClear);
-    text_layer_set_text_color(HULayer, GColorWhite);
-    text_layer_set_font(HULayer, fonts_load_custom_font(f_handle));
-    text_layer_set_text_alignment(HULayer, GTextAlignmentRight);
-    layer_add_child(window_get_root_layer(window), (Layer*) HULayer);
-
-    colonLayer = text_layer_create(GRect(69, 53, 50, 60));
-    text_layer_set_background_color(colonLayer, GColorClear);
-    text_layer_set_text_color(colonLayer, GColorWhite);
-    text_layer_set_font(colonLayer, fonts_load_custom_font(f_handle));
-    text_layer_set_text_alignment(colonLayer, GTextAlignmentLeft);
-    layer_add_child(window_get_root_layer(window), (Layer*) colonLayer);
-
-    MTLayer = text_layer_create(GRect(MTX, 53, 50, 60));
-    text_layer_set_background_color(MTLayer, GColorClear);
-    text_layer_set_text_color(MTLayer, GColorWhite);
-    text_layer_set_font(MTLayer, fonts_load_custom_font(f_handle));
-    text_layer_set_text_alignment(MTLayer, GTextAlignmentRight);
-    layer_add_child(window_get_root_layer(window), (Layer*) MTLayer);
-
-    MULayer = text_layer_create(GRect(MUX, 53, 50, 60));
-    text_layer_set_background_color(MULayer, GColorClear);
-    text_layer_set_text_color(MULayer, GColorWhite);
-    text_layer_set_font(MULayer, fonts_load_custom_font(f_handle));
-    text_layer_set_text_alignment(MULayer, GTextAlignmentRight);
-    layer_add_child(window_get_root_layer(window), (Layer*) MULayer);
-
-    dateLayer = text_layer_create(GRect(45, 105, 100, 30));
-    text_layer_set_background_color(dateLayer, GColorClear);
-    text_layer_set_text_color(dateLayer, GColorWhite);
-    text_layer_set_font(dateLayer, fonts_load_custom_font(sm_f_handle));
-    text_layer_set_text_alignment(dateLayer, GTextAlignmentRight);
-    layer_add_child(window_get_root_layer(window), (Layer*) dateLayer);
+    Layer * rootLayer = window_get_root_layer(window);
+    setupTextLayer(rootLayer, &HTLayer,    GRect(HTX, 53,  50, 60), f_handle, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &HULayer,    GRect(HUX, 53,  50, 60), f_handle, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &colonLayer, GRect(69,  53,  50, 60), f_handle, GTextAlignmentLeft);
+    setupTextLayer(rootLayer, &MTLayer,    GRect(MTX, 53,  50, 60), f_handle, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &MULayer,    GRect(MUX, 53,  50, 60), f_handle, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &dateLayer,  GRect(45, 105, 100, 30), sm_f_handle, GTextAlignmentRight);
 
     //Allocate inverter layers
     HTInvLayer = inverter_layer_create(GRect(0, 0, INV_LAYER_WIDTH, 0));
