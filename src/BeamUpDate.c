@@ -23,7 +23,7 @@
 //Prototypes
 void setTimeDigits(struct tm * t);
 void setDate(struct tm * t);
-void predictNextDigits(struct tm *t);
+struct TimeDigits getTimeDigits(struct tm * t);
 void animateLayer(Layer *layer, GRect start, GRect finish, int duration, int delay);
 
 //Globals
@@ -69,31 +69,35 @@ static void handle_tick(struct tm *t, TimeUnits units_changed)
     else if(seconds == 59)
     {
         //Predict next changes
-        predictNextDigits(t); //CALLS GETTIMEDIGITS()
+        struct tm nextTime = *t;
+        nextTime.tm_min += 1;
+        mktime(&nextTime);
+
+        const struct TimeDigits nextDigits = getTimeDigits(&nextTime);
 
         //Only change minutes units if its changed
-        if((curDigits.MUDigit != prevDigits.MUDigit) || (DEBUG))
+        if((nextDigits.MUDigit != prevDigits.MUDigit) || (DEBUG))
         {
             animateLayer(inverter_layer_get_layer(MUInvLayer), GRect(MUX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(MUX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
             animateLayer(text_layer_get_layer(MULayer), GRect(MUX, TIMEY, 50, 60), GRect(MUX, -50, 50, 60), 200, 700);
         }
 
         //Only change minutes tens if its changed
-        if((curDigits.MTDigit != prevDigits.MTDigit) || (DEBUG))
+        if((nextDigits.MTDigit != prevDigits.MTDigit) || (DEBUG))
         {
             animateLayer(inverter_layer_get_layer(MTInvLayer), GRect(MTX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(MTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
             animateLayer(text_layer_get_layer(MTLayer), GRect(MTX, TIMEY, 50, 60), GRect(MTX, -50, 50, 60), 200, 700);
         }
 
         //Only change hours units if its changed
-        if((curDigits.HUDigit != prevDigits.HUDigit) || (DEBUG))
+        if((nextDigits.HUDigit != prevDigits.HUDigit) || (DEBUG))
         {
             animateLayer(inverter_layer_get_layer(HUInvLayer), GRect(HUX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(HUX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
             animateLayer(text_layer_get_layer(HULayer), GRect(HUX, TIMEY, 50, 60), GRect(HUX, -50, 50, 60), 200, 700);
         }
 
         //Only change hours tens if its changed
-        if((curDigits.HTDigit != prevDigits.HTDigit) || (DEBUG))
+        if((nextDigits.HTDigit != prevDigits.HTDigit) || (DEBUG))
         {
             animateLayer(inverter_layer_get_layer(HTInvLayer), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
             animateLayer(text_layer_get_layer(HTLayer), GRect(HTX, TIMEY, 50, 60), GRect(HTX, -50, 50, 60), 200, 700);
@@ -336,21 +340,6 @@ void setDate(struct tm * t)
 
     text_layer_set_text(dayLayer, DAY_NAME_GERMAN[t->tm_wday]);
 
-}
-
-/**
- * Function to predict digit changes to make the digit change mechanic fire correctly.
- * If the values change at seconds == 0, then the animations depending on MUDigit != MUprev
- * will not fire!
- * The solution is to advance the ones about to change pre-emptively
- */
-void predictNextDigits(struct tm *t)
-{
-    struct tm nextTime = *t;
-    nextTime.tm_min += 1;
-    mktime(&nextTime);
-
-    curDigits = getTimeDigits(&nextTime);
 }
 
 /**
