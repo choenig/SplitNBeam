@@ -27,17 +27,16 @@ struct TimeDigits getTimeDigits(struct tm * t);
 void animateLayer(Layer *layer, GRect start, GRect finish, int duration, int delay);
 
 //Globals
-
 static TextLayer     *colonLayer, *dateLayer, *dayLayer;
-static TextLayer     *HTLayer,    *HULayer,    *MTLayer,    *MULayer;
-static InverterLayer *HTInvLayer, *HUInvLayer, *MTInvLayer, *MUInvLayer;
+static TextLayer     *layerH0,    *layerH1,    *layerM0,    *layerM1;
+static InverterLayer *invLayerH0, *invLayerH1, *invLayerM0, *invLayerM1;
 static InverterLayer *bottomInvLayer;
 
 struct TimeDigits {
-    int HTDigit;
-    int HUDigit;
-    int MTDigit;
-    int MUDigit;
+    int h0;
+    int h1;
+    int m0;
+    int m1;
 };
 
 static struct TimeDigits curDigits  = {0,0,0,0};
@@ -79,31 +78,31 @@ static void handle_tick(struct tm *t, TimeUnits units_changed)
         const struct TimeDigits nextDigits = getTimeDigits(&nextTime);
 
         //Only change minutes units if its changed
-        if((nextDigits.MUDigit != prevDigits.MUDigit) || (DEBUG))
+        if((nextDigits.m1 != prevDigits.m1) || (DEBUG))
         {
-            animateLayer(inverter_layer_get_layer(MUInvLayer), GRect(MUX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(MUX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
-            animateLayer(text_layer_get_layer(MULayer), GRect(MUX, TIMEY, 50, 60), GRect(MUX, -50, 50, 60), 200, 700);
+            animateLayer(inverter_layer_get_layer(invLayerM1), GRect(MUX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(MUX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
+            animateLayer(text_layer_get_layer(layerM1), GRect(MUX, TIMEY, 50, 60), GRect(MUX, -50, 50, 60), 200, 700);
         }
 
         //Only change minutes tens if its changed
-        if((nextDigits.MTDigit != prevDigits.MTDigit) || (DEBUG))
+        if((nextDigits.m0 != prevDigits.m0) || (DEBUG))
         {
-            animateLayer(inverter_layer_get_layer(MTInvLayer), GRect(MTX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(MTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
-            animateLayer(text_layer_get_layer(MTLayer), GRect(MTX, TIMEY, 50, 60), GRect(MTX, -50, 50, 60), 200, 700);
+            animateLayer(inverter_layer_get_layer(invLayerM0), GRect(MTX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(MTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
+            animateLayer(text_layer_get_layer(layerM0), GRect(MTX, TIMEY, 50, 60), GRect(MTX, -50, 50, 60), 200, 700);
         }
 
         //Only change hours units if its changed
-        if((nextDigits.HUDigit != prevDigits.HUDigit) || (DEBUG))
+        if((nextDigits.h1 != prevDigits.h1) || (DEBUG))
         {
-            animateLayer(inverter_layer_get_layer(HUInvLayer), GRect(HUX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(HUX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
-            animateLayer(text_layer_get_layer(HULayer), GRect(HUX, TIMEY, 50, 60), GRect(HUX, -50, 50, 60), 200, 700);
+            animateLayer(inverter_layer_get_layer(invLayerH1), GRect(HUX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(HUX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
+            animateLayer(text_layer_get_layer(layerH1), GRect(HUX, TIMEY, 50, 60), GRect(HUX, -50, 50, 60), 200, 700);
         }
 
         //Only change hours tens if its changed
-        if((nextDigits.HTDigit != prevDigits.HTDigit) || (DEBUG))
+        if((nextDigits.h0 != prevDigits.h0) || (DEBUG))
         {
-            animateLayer(inverter_layer_get_layer(HTInvLayer), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
-            animateLayer(text_layer_get_layer(HTLayer), GRect(HTX, TIMEY, 50, 60), GRect(HTX, -50, 50, 60), 200, 700);
+            animateLayer(inverter_layer_get_layer(invLayerH0), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
+            animateLayer(text_layer_get_layer(layerH0), GRect(HTX, TIMEY, 50, 60), GRect(HTX, -50, 50, 60), 200, 700);
         }
     }
     else if(seconds == 0)
@@ -112,25 +111,25 @@ static void handle_tick(struct tm *t, TimeUnits units_changed)
         setTimeDigits(t);
 
         //Animate stuff back into place
-        if((curDigits.MUDigit != prevDigits.MUDigit) || (DEBUG))
+        if((curDigits.m1 != prevDigits.m1) || (DEBUG))
         {
-            animateLayer(text_layer_get_layer(MULayer), GRect(MUX, -50, 50, 60), GRect(MUX, TIMEY, 50, 60), 200, 100);
-            animateLayer(inverter_layer_get_layer(MUInvLayer), GRect(MUX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(MUX+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
+            animateLayer(text_layer_get_layer(layerM1), GRect(MUX, -50, 50, 60), GRect(MUX, TIMEY, 50, 60), 200, 100);
+            animateLayer(inverter_layer_get_layer(invLayerM1), GRect(MUX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(MUX+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
         }
-        if((curDigits.MTDigit != prevDigits.MTDigit) || (DEBUG))
+        if((curDigits.m0 != prevDigits.m0) || (DEBUG))
         {
-            animateLayer(text_layer_get_layer(MTLayer), GRect(MTX, -50, 50, 60), GRect(MTX, TIMEY, 50, 60), 200, 100);
-            animateLayer(inverter_layer_get_layer(MTInvLayer), GRect(MTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(MTX+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
+            animateLayer(text_layer_get_layer(layerM0), GRect(MTX, -50, 50, 60), GRect(MTX, TIMEY, 50, 60), 200, 100);
+            animateLayer(inverter_layer_get_layer(invLayerM0), GRect(MTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(MTX+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
         }
-        if((curDigits.HUDigit != prevDigits.HUDigit) || (DEBUG))
+        if((curDigits.h1 != prevDigits.h1) || (DEBUG))
         {
-            animateLayer(text_layer_get_layer(HULayer), GRect(HUX, -50, 50, 60), GRect(HUX, TIMEY, 50, 60), 200, 100);
-            animateLayer(inverter_layer_get_layer(HUInvLayer), GRect(HUX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(HUX+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
+            animateLayer(text_layer_get_layer(layerH1), GRect(HUX, -50, 50, 60), GRect(HUX, TIMEY, 50, 60), 200, 100);
+            animateLayer(inverter_layer_get_layer(invLayerH1), GRect(HUX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(HUX+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
         }
-        if((curDigits.HTDigit != prevDigits.HTDigit) || (DEBUG))
+        if((curDigits.h0 != prevDigits.h0) || (DEBUG))
         {
-            animateLayer(text_layer_get_layer(HTLayer), GRect(HTX, -50, 50, 60), GRect(HTX, TIMEY, 50, 60), 200, 100);
-            animateLayer(inverter_layer_get_layer(HTInvLayer), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
+            animateLayer(text_layer_get_layer(layerH0), GRect(HTX, -50, 50, 60), GRect(HTX, TIMEY, 50, 60), 200, 100);
+            animateLayer(inverter_layer_get_layer(invLayerH0), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
         }
         prevDigits = curDigits;
     }
@@ -171,26 +170,26 @@ static void window_load(Window *window)
 
     //Allocate text layers
     Layer * rootLayer = window_get_root_layer(window);
-    setupTextLayer(rootLayer, &HTLayer,    GRect(HTX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
-    setupTextLayer(rootLayer, &HULayer,    GRect(HUX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &layerH0,    GRect(HTX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &layerH1,    GRect(HUX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
     setupTextLayer(rootLayer, &colonLayer, GRect(69,  TIMEY,  50, 60), fontImagine48, GTextAlignmentLeft);
-    setupTextLayer(rootLayer, &MTLayer,    GRect(MTX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
-    setupTextLayer(rootLayer, &MULayer,    GRect(MUX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &layerM0,    GRect(MTX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &layerM1,    GRect(MUX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
     setupTextLayer(rootLayer, &dateLayer,  GRect(0,   DATEY, 144, 30), fontImagine24, GTextAlignmentRight);
     setupTextLayer(rootLayer, &dayLayer,   GRect(-20, DAYY,  158, 30), fontImagine18, GTextAlignmentRight);
 
     //Allocate inverter layers
-    HTInvLayer = inverter_layer_create(GRect(0, 0, INV_LAYER_WIDTH, 0));
-    HUInvLayer = inverter_layer_create(GRect(0, 0, INV_LAYER_WIDTH, 0));
+    invLayerH0 = inverter_layer_create(GRect(0, 0, INV_LAYER_WIDTH, 0));
+    invLayerH1 = inverter_layer_create(GRect(0, 0, INV_LAYER_WIDTH, 0));
+    invLayerM0 = inverter_layer_create(GRect(0, 0, INV_LAYER_WIDTH, 0));
+    invLayerM1 = inverter_layer_create(GRect(0, 0, INV_LAYER_WIDTH, 0));
     bottomInvLayer = inverter_layer_create(GRect(0, 0, 144, 0));
-    MTInvLayer = inverter_layer_create(GRect(0, 0, INV_LAYER_WIDTH, 0));
-    MUInvLayer = inverter_layer_create(GRect(0, 0, INV_LAYER_WIDTH, 0));
 
-    layer_add_child(window_get_root_layer(window), (Layer*) HTInvLayer);
-    layer_add_child(window_get_root_layer(window), (Layer*) HUInvLayer);
+    layer_add_child(window_get_root_layer(window), (Layer*) invLayerH0);
+    layer_add_child(window_get_root_layer(window), (Layer*) invLayerH1);
+    layer_add_child(window_get_root_layer(window), (Layer*) invLayerM0);
+    layer_add_child(window_get_root_layer(window), (Layer*) invLayerM1);
     layer_add_child(window_get_root_layer(window), (Layer*) bottomInvLayer);
-    layer_add_child(window_get_root_layer(window), (Layer*) MTInvLayer);
-    layer_add_child(window_get_root_layer(window), (Layer*) MUInvLayer);
 
     //Make sure the face is not blank
     const time_t now = time(0);
@@ -208,20 +207,20 @@ static void window_load(Window *window)
 static void window_unload(Window *window)
 {
     //Free text layers
-    text_layer_destroy(HTLayer);
-    text_layer_destroy(HULayer);
+    text_layer_destroy(layerH0);
+    text_layer_destroy(layerH1);
     text_layer_destroy(colonLayer);
-    text_layer_destroy(MTLayer);
-    text_layer_destroy(MULayer);
+    text_layer_destroy(layerM0);
+    text_layer_destroy(layerM1);
     text_layer_destroy(dateLayer);
     text_layer_destroy(dayLayer);
 
     //Free inverter layers
-    inverter_layer_destroy(HTInvLayer);
-    inverter_layer_destroy(HUInvLayer);
+    inverter_layer_destroy(invLayerH0);
+    inverter_layer_destroy(invLayerH1);
     inverter_layer_destroy(bottomInvLayer);
-    inverter_layer_destroy(MTInvLayer);
-    inverter_layer_destroy(MUInvLayer);
+    inverter_layer_destroy(invLayerM0);
+    inverter_layer_destroy(invLayerM1);
 
     //Unsubscribe from events
     tick_timer_service_unsubscribe();
@@ -280,10 +279,10 @@ struct TimeDigits getTimeDigits(struct tm * t)
 
     //Get digits
     struct TimeDigits retval;
-    retval.HTDigit = txt[0] - '0';
-    retval.HUDigit = txt[1] - '0';
-    retval.MTDigit = txt[3] - '0';
-    retval.MUDigit = txt[4] - '0';
+    retval.h0 = txt[0] - '0';
+    retval.h1 = txt[1] - '0';
+    retval.m0 = txt[3] - '0';
+    retval.m1 = txt[4] - '0';
     return retval;
 }
 
@@ -301,10 +300,10 @@ void setTimeDigits(struct tm * t)
     static char MUText[] = "0";
 
     //Copy digits
-    HTText[0] = '0' + curDigits.HTDigit;
-    HUText[0] = '0' + curDigits.HUDigit;
-    MTText[0] = '0' + curDigits.MTDigit;
-    MUText[0] = '0' + curDigits.MUDigit;
+    HTText[0] = '0' + curDigits.h0;
+    HUText[0] = '0' + curDigits.h1;
+    MTText[0] = '0' + curDigits.m0;
+    MUText[0] = '0' + curDigits.m1;
 
     //Fix digits for debugging purposes
     if(DEBUG)
@@ -316,11 +315,11 @@ void setTimeDigits(struct tm * t)
     }
     
     //Set digits in TextLayers
-    text_layer_set_text(HTLayer, HTText);
-    text_layer_set_text(HULayer, HUText);
+    text_layer_set_text(layerH0, HTText);
+    text_layer_set_text(layerH1, HUText);
     text_layer_set_text(colonLayer, colonText);
-    text_layer_set_text(MTLayer, MTText);
-    text_layer_set_text(MULayer, MUText);
+    text_layer_set_text(layerM0, MTText);
+    text_layer_set_text(layerM1, MUText);
 }
 
 const char * DAY_NAME_GERMAN[] = {
@@ -342,7 +341,6 @@ void setDate(struct tm * t)
     text_layer_set_text(dateLayer, dateText);
 
     text_layer_set_text(dayLayer, DAY_NAME_GERMAN[t->tm_wday]);
-
 }
 
 /**
