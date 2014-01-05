@@ -43,7 +43,7 @@ static char hourText[] = "00", minuteText[] = "00",
 static void handle_tick(struct tm *t, TimeUnits units_changed) 
 {    
     //Get the time
-    int seconds = t->tm_sec;
+    const int seconds = t->tm_sec;
      
     //Bottom suface
     if(seconds == 15)
