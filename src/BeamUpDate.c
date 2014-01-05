@@ -195,13 +195,9 @@ static void window_load(Window *window) {
     layer_add_child(window_get_root_layer(window), (Layer*) MTInvLayer);
     layer_add_child(window_get_root_layer(window), (Layer*) MUInvLayer);
 
-
     //Make sure the face is not blank
-    struct tm *t;
-
-    time_t temp;
-    temp = time(NULL);
-    t = localtime(&temp);
+    const time_t now = time(0);
+    struct tm * t = localtime(&now);
     setTimeDigits(t);
 
     //Stop 'all change' on first minute
@@ -209,7 +205,6 @@ static void window_load(Window *window) {
     MTprev = MTDigit;
     HUprev = HUDigit;
     HTprev = HTDigit;
-
 }
 
 /**
