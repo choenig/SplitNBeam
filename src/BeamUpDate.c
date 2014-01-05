@@ -166,7 +166,7 @@ static void window_load(Window *window)
     setupTextLayer(rootLayer, &colonLayer, GRect(69,  TIMEY,  50, 60), fontImagine48, GTextAlignmentLeft);
     setupTextLayer(rootLayer, &MTLayer,    GRect(MTX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
     setupTextLayer(rootLayer, &MULayer,    GRect(MUX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
-    setupTextLayer(rootLayer, &dateLayer,  GRect(45,  DATEY, 100, 30), fontImagine24, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &dateLayer,  GRect(0,   DATEY, 144, 30), fontImagine24, GTextAlignmentRight);
     setupTextLayer(rootLayer, &dayLayer,   GRect(-20, DAYY,  158, 30), fontImagine18, GTextAlignmentRight);
 
     //Allocate inverter layers
