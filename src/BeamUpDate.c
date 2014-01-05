@@ -57,20 +57,7 @@ static void handle_tick(struct tm *t, TimeUnits units_changed)
         firstRun = false;
     }
 
-    //Bottom suface
-    if(seconds == 15)
-    {
-        animate_layer(inverter_layer_get_layer(bottomInvLayer), GRect(0, 105, 0, 5), GRect(0, 105, 36, 5), 500, 0);
-    }
-    else if(seconds == 30)  
-    {
-        animate_layer(inverter_layer_get_layer(bottomInvLayer), GRect(0, 105, 36, 5), GRect(0, 105, 72, 5), 500, 0);
-    }
-    else if(seconds == 45)  
-    {
-        animate_layer(inverter_layer_get_layer(bottomInvLayer), GRect(0, 105, 72, 5), GRect(0, 105, 108, 5), 500, 0);
-    }
-    else if(seconds == 58)  
+    if(seconds == 58)
     {
         animate_layer(inverter_layer_get_layer(bottomInvLayer), GRect(0, 105, 108, 5), GRect(0, 105, 144, 5), 500, 1000);
     }
@@ -141,10 +128,14 @@ static void handle_tick(struct tm *t, TimeUnits units_changed)
             animate_layer(inverter_layer_get_layer(HTInvLayer), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(HTX+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
             HTprev = HTDigit;   
         }
-         
-        //Bottom surface down
-        animate_layer(inverter_layer_get_layer(bottomInvLayer), GRect(0, 105, 144, 5), GRect(0, 105, 0, 5), 500, 500);
     } 
+
+    //Bottom suface
+    if(seconds % 15 == 0)
+    {
+        const int delay = seconds == 0 ? 500 : 0;
+        animate_layer(inverter_layer_get_layer(bottomInvLayer), GRect(0, 105, fromX, 5), GRect(0, 105, tillX, 5), 500, delay);
+    }
 }
 
 /*
