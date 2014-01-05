@@ -23,7 +23,6 @@ void animate_layer(Layer *layer, GRect start, GRect finish, int duration, int de
 void setupTextLayer(TextLayer *layer, GRect location, GColor b_colour, GColor t_colour, ResHandle f_handle, GTextAlignment alignment);
 
 //Globals
-static Window *window;
 static TextLayer *HTLayer, *HULayer, *colonLayer, *MTLayer, *MULayer, *dateLayer;
 static InverterLayer *HTInvLayer, *HUInvLayer, *MTInvLayer, *MUInvLayer, *bottomInvLayer;
 static int HTDigit = 0, HTprev = 0, 
@@ -239,8 +238,9 @@ static void window_unload(Window *window) {
 /**
  * Init app
  */
-static void init(void) {
-    window = window_create();
+static Window * init(void)
+{
+    Window * window = window_create();
     WindowHandlers handlers = {
         .load = window_load,
         .unload = window_unload
@@ -252,12 +252,15 @@ static void init(void) {
 
     //Finally
     window_stack_push(window, true);
+
+    return window;
 }
 
 /**
  * De-init app
  */
-static void deinit(void) {
+static void deinit(Window * window)
+{
     window_destroy(window);
 }
 
@@ -265,9 +268,9 @@ static void deinit(void) {
  * Entry point
  */
 int main(void) {
-    init();
+    Window * window = init();
     app_event_loop();
-    deinit();
+    deinit(window);
 }
 
 /**
