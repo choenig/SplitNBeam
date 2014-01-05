@@ -31,8 +31,7 @@ static int HTDigit = 0, HTprev = 0,
            HUDigit = 0, HUprev = 0,
            MTDigit = 0, MTprev = 0,
            MUDigit = 0, MUprev = 0;
-static char hourText[] = "00", minuteText[] = "00",
-            HTText[] = "0", HUText[] = "0",
+static char HTText[] = "0", HUText[] = "0",
             colonText[] = ":",
             MTText[] = "0", MUText[] = "0",
             dateText[] = "Mon 01";
@@ -289,17 +288,14 @@ int main(void) {
  */
 void getTimeDigits(struct tm *t) 
 {
-    //Hour string
-    strftime(hourText, sizeof(hourText), clock_is_24h_style() ? "%H" : "%I", t);
-
-    //Minute string
-    strftime(minuteText, sizeof(minuteText), "%M", t);
+    char txt[] = "00:00";
+    strftime(txt, sizeof(txt), clock_is_24h_style() ? "%H:%M" : "%I:%M", t);
 
     //Get digits
-    MUDigit = minuteText[1] - '0';
-    MTDigit = minuteText[0] - '0';
-    HUDigit = hourText[1] - '0';
-    HTDigit = hourText[0] - '0';
+    HTDigit = txt[0] - '0';
+    HUDigit = txt[1] - '0';
+    MTDigit = txt[3] - '0';
+    MUDigit = txt[4] - '0';
 
     //Get date
     strftime(dateText, sizeof(dateText), "%a %d", t);	//Sun 01
