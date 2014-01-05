@@ -25,6 +25,11 @@
                 "name": "FONT_IMAGINE_24",
                 "type": "font",
                 "file": "fonts/imagine.ttf"
+            },
+            {
+                "name": "FONT_IMAGINE_18",
+                "type": "font",
+                "file": "fonts/imagine.ttf"
             }
         ]
     }

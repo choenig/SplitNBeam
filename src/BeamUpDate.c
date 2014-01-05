@@ -13,6 +13,7 @@
 #define TIMEY 53
 #define SECSY 105
 #define DATEY 105
+#define DAYY DATEY + 26
 #define HTX -12
 #define HUX  22
 #define MTX  64
@@ -26,7 +27,7 @@ void predictNextDigits(struct tm *t);
 void animateLayer(Layer *layer, GRect start, GRect finish, int duration, int delay);
 
 //Globals
-static TextLayer *HTLayer, *HULayer, *colonLayer, *MTLayer, *MULayer, *dateLayer;
+static TextLayer *HTLayer, *HULayer, *colonLayer, *MTLayer, *MULayer, *dateLayer, * dayLayer;
 static InverterLayer *HTInvLayer, *HUInvLayer, *MTInvLayer, *MUInvLayer, *bottomInvLayer;
 static int HTDigit = 0, HTprev = 0, 
            HUDigit = 0, HUprev = 0,
@@ -156,6 +157,7 @@ static void window_load(Window *window)
     //Get Font
     ResHandle fontImagine48 = resource_get_handle(RESOURCE_ID_FONT_IMAGINE_48);
     ResHandle fontImagine24 = resource_get_handle(RESOURCE_ID_FONT_IMAGINE_24);
+    ResHandle fontImagine18 = resource_get_handle(RESOURCE_ID_FONT_IMAGINE_18);
 
     //Allocate text layers
     Layer * rootLayer = window_get_root_layer(window);
@@ -165,6 +167,7 @@ static void window_load(Window *window)
     setupTextLayer(rootLayer, &MTLayer,    GRect(MTX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
     setupTextLayer(rootLayer, &MULayer,    GRect(MUX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
     setupTextLayer(rootLayer, &dateLayer,  GRect(45,  DATEY, 100, 30), fontImagine24, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &dayLayer,   GRect(-20, DAYY,  158, 30), fontImagine18, GTextAlignmentRight);
 
     //Allocate inverter layers
     HTInvLayer = inverter_layer_create(GRect(0, 0, INV_LAYER_WIDTH, 0));
@@ -204,6 +207,7 @@ static void window_unload(Window *window)
     text_layer_destroy(MTLayer);
     text_layer_destroy(MULayer);
     text_layer_destroy(dateLayer);
+    text_layer_destroy(dayLayer);
 
     //Free inverter layers
     inverter_layer_destroy(HTInvLayer);
@@ -310,6 +314,16 @@ void setTimeDigits(struct tm * t)
     text_layer_set_text(MULayer, MUText);
 }
 
+const char * DAY_NAME_GERMAN[] = {
+    "Sonntag",
+    "Montag",
+    "Dienstag",
+    "Mittwoch",
+    "Donnerstag",
+    "Freitag",
+    "Samstag"
+};
+
 void setDate(struct tm * t)
 {
     static char dateText[] = "12.03.";
@@ -317,6 +331,9 @@ void setDate(struct tm * t)
 
     //Set date to TextLayer
     text_layer_set_text(dateLayer, dateText);
+
+    text_layer_set_text(dayLayer, DAY_NAME_GERMAN[t->tm_wday]);
+
 }
 
 /**
