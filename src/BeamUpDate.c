@@ -132,7 +132,8 @@ static void handle_tick(struct tm *t, TimeUnits units_changed)
 /**
  * Load window members
  */
-static void window_load(Window *window) {
+static void window_load(Window *window)
+{
     window_set_background_color(window, GColorBlack);
 
     //Get Font
@@ -210,7 +211,8 @@ static void window_load(Window *window) {
 /**
  * Unload window members
  */
-static void window_unload(Window *window) {	
+static void window_unload(Window *window)
+{
     //Free text layers
     text_layer_destroy(HTLayer);
     text_layer_destroy(HULayer);
@@ -278,7 +280,7 @@ static char dateText[] = "Mon 01";
 /**
  * Function to get time digits
  */
-void getTimeDigits(struct tm *t) 
+void getTimeDigits(struct tm *t)
 {
     char txt[] = "00:00";
     strftime(txt, sizeof(txt), clock_is_24h_style() ? "%H:%M" : "%I:%M", t);
@@ -296,7 +298,7 @@ void getTimeDigits(struct tm *t)
 /**
  * Function to set the time and date digits on the TextLayers
  */
-void setTimeDigits(struct tm *t)
+void setTimeDigits(struct tm * t)
 {
     getTimeDigits(t);
 
@@ -343,6 +345,7 @@ void predictNextDigits(struct tm *t)
     struct tm nextTime = *t;
     nextTime.tm_min += 1;
     mktime(&nextTime);
+
     getTimeDigits(&nextTime);
 }
 
