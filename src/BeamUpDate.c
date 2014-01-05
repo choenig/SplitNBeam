@@ -290,10 +290,7 @@ int main(void) {
 void getTimeDigits(struct tm *t) 
 {
     //Hour string
-    if(clock_is_24h_style())
-        strftime(hourText, sizeof(hourText), "%H", t);
-    else
-        strftime(hourText, sizeof(hourText), "%I", t);
+    strftime(hourText, sizeof(hourText), clock_is_24h_style() ? "%H" : "%I", t);
 
     //Minute string
     strftime(minuteText, sizeof(minuteText), "%M", t);
