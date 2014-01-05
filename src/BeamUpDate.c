@@ -154,17 +154,17 @@ static void window_load(Window *window)
     window_set_background_color(window, GColorBlack);
 
     //Get Font
-    ResHandle f_handle = resource_get_handle(RESOURCE_ID_FONT_IMAGINE_48);
-    ResHandle sm_f_handle = resource_get_handle(RESOURCE_ID_FONT_IMAGINE_24);
+    ResHandle fontImagine48 = resource_get_handle(RESOURCE_ID_FONT_IMAGINE_48);
+    ResHandle fontImagine24 = resource_get_handle(RESOURCE_ID_FONT_IMAGINE_24);
 
     //Allocate text layers
     Layer * rootLayer = window_get_root_layer(window);
-    setupTextLayer(rootLayer, &HTLayer,    GRect(HTX, TIMEY,  50, 60), f_handle, GTextAlignmentRight);
-    setupTextLayer(rootLayer, &HULayer,    GRect(HUX, TIMEY,  50, 60), f_handle, GTextAlignmentRight);
-    setupTextLayer(rootLayer, &colonLayer, GRect(69,  TIMEY,  50, 60), f_handle, GTextAlignmentLeft);
-    setupTextLayer(rootLayer, &MTLayer,    GRect(MTX, TIMEY,  50, 60), f_handle, GTextAlignmentRight);
-    setupTextLayer(rootLayer, &MULayer,    GRect(MUX, TIMEY,  50, 60), f_handle, GTextAlignmentRight);
-    setupTextLayer(rootLayer, &dateLayer,  GRect(45,  DATEY, 100, 30), sm_f_handle, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &HTLayer,    GRect(HTX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &HULayer,    GRect(HUX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &colonLayer, GRect(69,  TIMEY,  50, 60), fontImagine48, GTextAlignmentLeft);
+    setupTextLayer(rootLayer, &MTLayer,    GRect(MTX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &MULayer,    GRect(MUX, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &dateLayer,  GRect(45,  DATEY, 100, 30), fontImagine24, GTextAlignmentRight);
 
     //Allocate inverter layers
     HTInvLayer = inverter_layer_create(GRect(0, 0, INV_LAYER_WIDTH, 0));
