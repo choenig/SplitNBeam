@@ -27,8 +27,11 @@ struct TimeDigits getTimeDigits(struct tm * t);
 void animateLayer(Layer *layer, GRect start, GRect finish, int duration, int delay);
 
 //Globals
-static TextLayer *HTLayer, *HULayer, *colonLayer, *MTLayer, *MULayer, *dateLayer, * dayLayer;
-static InverterLayer *HTInvLayer, *HUInvLayer, *MTInvLayer, *MUInvLayer, *bottomInvLayer;
+
+static TextLayer     *colonLayer, *dateLayer, *dayLayer;
+static TextLayer     *HTLayer,    *HULayer,    *MTLayer,    *MULayer;
+static InverterLayer *HTInvLayer, *HUInvLayer, *MTInvLayer, *MUInvLayer;
+static InverterLayer *bottomInvLayer;
 
 struct TimeDigits {
     int HTDigit;
