@@ -312,8 +312,8 @@ void setTimeDigits(struct tm * t)
 
 void setDate(struct tm * t)
 {
-    static char dateText[] = "Mon xx";
-    strftime(dateText, sizeof(dateText), "%a %d", t);	//Sun 01
+    static char dateText[] = "12.03.";
+    strftime(dateText, sizeof(dateText), "%d.%m.", t);	//Sun 01
 
     //Set date to TextLayer
     text_layer_set_text(dateLayer, dateText);
