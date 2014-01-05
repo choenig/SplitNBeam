@@ -258,6 +258,7 @@ int main(void) {
     Window * window = init();
     app_event_loop();
     deinit(window);
+    return 0;
 }
 
 /**
