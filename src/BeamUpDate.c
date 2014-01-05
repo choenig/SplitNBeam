@@ -96,7 +96,6 @@ static void handle_tick(struct tm *t, TimeUnits units_changed)
     {
         //Set the time off screen
         setTimeDigits(t);
-        setDate(t);
 
         //Animate stuff back into place
         if((MUDigit != MUprev) || (DEBUG))
@@ -130,6 +129,10 @@ static void handle_tick(struct tm *t, TimeUnits units_changed)
     {
         const int delay = seconds == 0 ? 500 : 0;
         animateLayer(inverter_layer_get_layer(bottomInvLayer), GRect(0, SECSY, fromX, 5), GRect(0, SECSY, tillX, 5), 500, delay);
+    }
+
+    if (units_changed & DAY_UNIT) {
+        setDate(t);
     }
 }
 
