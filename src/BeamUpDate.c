@@ -198,6 +198,20 @@ static void window_load(Window *window)
 }
 
 /**
+ * Handle tap acctions
+ */
+void accelTapHandler(AccelAxisType axis, int32_t direction)
+{
+//    app_log(APP_LOG_LEVEL_DEBUG, "", 0, "%d %d", (int)axis, (int)direction);
+
+    static bool hideDate = true;
+    layer_set_hidden((Layer*)dateLayer, hideDate);
+    layer_set_hidden((Layer*)dayLayer, hideDate);
+
+    hideDate = !hideDate;
+}
+
+/**
  * Unload window members
  */
 static void window_unload(Window *window)
@@ -240,6 +254,8 @@ static Window * init(void)
     //Finally
     window_stack_push(window, true);
 
+    accel_tap_service_subscribe(&accelTapHandler);
+
     return window;
 }
 
@@ -248,6 +264,8 @@ static Window * init(void)
  */
 static void deinit(Window * window)
 {
+    accel_tap_service_unsubscribe();
+
     window_destroy(window);
 }
 
