@@ -27,7 +27,7 @@ struct TimeDigits getTimeDigits(struct tm * t);
 void animateLayer(Layer *layer, GRect start, GRect finish, int duration, int delay);
 
 //Globals
-static TextLayer     *colonLayer, *dateLayer, *dayLayer;
+static TextLayer     *colonLayer, *weekLayer, *dateLayer, *dayLayer;
 static TextLayer     *layerH0,    *layerH1,    *layerM0,    *layerM1;
 static InverterLayer *invLayerH0, *invLayerH1, *invLayerM0, *invLayerM1;
 static InverterLayer *bottomInvLayer;
@@ -163,6 +163,7 @@ static void window_load(Window *window)
     ResHandle fontImagine48 = resource_get_handle(RESOURCE_ID_FONT_IMAGINE_48);
     ResHandle fontImagine24 = resource_get_handle(RESOURCE_ID_FONT_IMAGINE_24);
     ResHandle fontImagine18 = resource_get_handle(RESOURCE_ID_FONT_IMAGINE_18);
+    ResHandle fontImagine10 = resource_get_handle(RESOURCE_ID_FONT_IMAGINE_10);
 
     //Allocate text layers
     Layer * rootLayer = window_get_root_layer(window);
@@ -171,7 +172,8 @@ static void window_load(Window *window)
     setupTextLayer(rootLayer, &colonLayer, GRect(69,  TIMEY,  50, 60), fontImagine48, GTextAlignmentLeft);
     setupTextLayer(rootLayer, &layerM0,    GRect(M0X, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
     setupTextLayer(rootLayer, &layerM1,    GRect(M1X, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
-    setupTextLayer(rootLayer, &dateLayer,  GRect(0,   DATEY, 144, 30), fontImagine24, GTextAlignmentRight);
+    setupTextLayer(rootLayer, &weekLayer,  GRect( 0,  DATEY,  30, 30), fontImagine10, GTextAlignmentLeft);
+    setupTextLayer(rootLayer, &dateLayer,  GRect(30,  DATEY, 114, 30), fontImagine24, GTextAlignmentRight);
     setupTextLayer(rootLayer, &dayLayer,   GRect(-20, DAYY,  158, 30), fontImagine18, GTextAlignmentRight);
 
     //Allocate inverter layers
@@ -205,6 +207,7 @@ void accelTapHandler(AccelAxisType axis, int32_t direction)
 //    app_log(APP_LOG_LEVEL_DEBUG, "", 0, "%d %d", (int)axis, (int)direction);
 
     static bool hideDate = true;
+    layer_set_hidden((Layer*)weekLayer, hideDate);
     layer_set_hidden((Layer*)dateLayer, hideDate);
     layer_set_hidden((Layer*)dayLayer, hideDate);
 
@@ -222,6 +225,7 @@ static void window_unload(Window *window)
     text_layer_destroy(colonLayer);
     text_layer_destroy(layerM0);
     text_layer_destroy(layerM1);
+    text_layer_destroy(weekLayer);
     text_layer_destroy(dateLayer);
     text_layer_destroy(dayLayer);
 
@@ -349,11 +353,14 @@ const char * DAY_NAME_GERMAN[] = {
 
 void setDate(struct tm * t)
 {
+    //Set date to TextLayer
     static char dateText[] = "12.03.";
     strftime(dateText, sizeof(dateText), "%d.%m.", t);	//Sun 01
-
-    //Set date to TextLayer
     text_layer_set_text(dateLayer, dateText);
+
+    static char weekText[] = "KW\nxx";
+    strftime(weekText, sizeof(weekText), "KW\n%V.", t);	//KW26
+    text_layer_set_text(weekLayer, weekText);
 
     text_layer_set_text(dayLayer, DAY_NAME_GERMAN[t->tm_wday]);
 }
