@@ -171,7 +171,7 @@ static void window_load(Window *window)
     Layer * rootLayer = window_get_root_layer(window);
     setupTextLayer(rootLayer, &layerH0,    GRect(H0X, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
     setupTextLayer(rootLayer, &layerH1,    GRect(H1X, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
-    setupTextLayer(rootLayer, &colonLayer, GRect(69,  TIMEY,  50, 60), fontImagine48, GTextAlignmentLeft);
+    setupTextLayer(rootLayer, &colonLayer, GRect(69,  TIMEY-6,  50, 60), fontImagine48, GTextAlignmentLeft);
     setupTextLayer(rootLayer, &layerM0,    GRect(M0X, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
     setupTextLayer(rootLayer, &layerM1,    GRect(M1X, TIMEY,  50, 60), fontImagine48, GTextAlignmentRight);
     setupTextLayer(rootLayer, &weekLayer,  GRect( 0,  DATEY,  30, 30), fontImagine10, GTextAlignmentLeft);
