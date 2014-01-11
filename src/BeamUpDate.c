@@ -24,6 +24,7 @@
 void setTimeDigits(struct tm * t);
 void setDate(struct tm * t);
 struct TimeDigits getTimeDigits(struct tm * t);
+void onBatteryStateChanged(BatteryChargeState charge);
 void animateLayer(Layer *layer, GRect start, GRect finish, int duration, int delay);
 
 //Globals
@@ -31,6 +32,7 @@ static TextLayer     *colonLayer, *weekLayer, *dateLayer, *dayLayer;
 static TextLayer     *layerH0,    *layerH1,    *layerM0,    *layerM1;
 static InverterLayer *invLayerH0, *invLayerH1, *invLayerM0, *invLayerM1;
 static InverterLayer *bottomInvLayer;
+static InverterLayer *batteryLayer;
 
 struct TimeDigits {
     int h0;
@@ -182,12 +184,14 @@ static void window_load(Window *window)
     invLayerM0 = inverter_layer_create(GRect(0, 0, INV_LAYER_WIDTH, 0));
     invLayerM1 = inverter_layer_create(GRect(0, 0, INV_LAYER_WIDTH, 0));
     bottomInvLayer = inverter_layer_create(GRect(0, 0, 144, 0));
+    batteryLayer   = inverter_layer_create(GRect(0, 0, 144, 0));
 
     layer_add_child(window_get_root_layer(window), (Layer*) invLayerH0);
     layer_add_child(window_get_root_layer(window), (Layer*) invLayerH1);
     layer_add_child(window_get_root_layer(window), (Layer*) invLayerM0);
     layer_add_child(window_get_root_layer(window), (Layer*) invLayerM1);
     layer_add_child(window_get_root_layer(window), (Layer*) bottomInvLayer);
+    layer_add_child(window_get_root_layer(window), (Layer*) batteryLayer);
 
     //Make sure the face is not blank
     const time_t now = time(0);
@@ -197,6 +201,9 @@ static void window_load(Window *window)
 
     //Stop 'all change' on first minute
     prevDigits = curDigits;
+
+    // initial update of battery
+    onBatteryStateChanged(battery_state_service_peek());
 }
 
 /**
@@ -233,11 +240,20 @@ static void window_unload(Window *window)
     inverter_layer_destroy(invLayerH0);
     inverter_layer_destroy(invLayerH1);
     inverter_layer_destroy(bottomInvLayer);
+    inverter_layer_destroy(batteryLayer);
     inverter_layer_destroy(invLayerM0);
     inverter_layer_destroy(invLayerM1);
 
     //Unsubscribe from events
     tick_timer_service_unsubscribe();
+}
+
+void onBatteryStateChanged(BatteryChargeState charge)
+{
+    static int lastOffset = 0;
+    const int offset = 144 * charge.charge_percent/100;
+    animateLayer(inverter_layer_get_layer(batteryLayer), GRect(0, 166, lastOffset, 2), GRect(0, 166, offset, 2), 500, 0);
+    lastOffset = offset;
 }
 
 /**
@@ -259,6 +275,7 @@ static Window * init(void)
     window_stack_push(window, true);
 
     accel_tap_service_subscribe(&accelTapHandler);
+    battery_state_service_subscribe(&onBatteryStateChanged);
 
     return window;
 }
@@ -269,6 +286,7 @@ static Window * init(void)
 static void deinit(Window * window)
 {
     accel_tap_service_unsubscribe();
+    battery_state_service_unsubscribe();
 
     window_destroy(window);
 }
