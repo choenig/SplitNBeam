@@ -180,16 +180,43 @@ static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
     }
 }
 
+static void setColors(bool blackOnWhite)
+{
+    Window * window = window_stack_get_top_window();
+    window_set_background_color(window,  blackOnWhite ? GColorWhite : GColorBlack);
+
+    const GColor textColor = blackOnWhite ? GColorBlack : GColorWhite;
+    text_layer_set_text_color(layerH0,    textColor);
+    text_layer_set_text_color(layerH1,    textColor);
+    text_layer_set_text_color(colonLayer, textColor);
+    text_layer_set_text_color(layerM0,    textColor);
+    text_layer_set_text_color(layerM1,    textColor);
+    text_layer_set_text_color(weekLayer,  textColor);
+    text_layer_set_text_color(dateLayer,  textColor);
+    text_layer_set_text_color(dayLayer,   textColor);
+
+    const GCompOp mode = blackOnWhite ? GCompOpAssignInverted : GCompOpAssign;
+    bitmap_layer_set_compositing_mode(batteryChargingLayer,       mode);
+    bitmap_layer_set_compositing_mode(batteryEmptyLayer,          mode);
+    bitmap_layer_set_compositing_mode(bluetoothDisconnectedLayer, mode);
+}
+
 void accelTapHandler(AccelAxisType axis, int32_t direction)
 {
 //    app_log(APP_LOG_LEVEL_DEBUG, "", 0, "%d %d", (int)axis, (int)direction);
 
-    static bool hideDate = true;
-    layer_set_hidden((Layer*)weekLayer, hideDate);
-    layer_set_hidden((Layer*)dateLayer, hideDate);
-    layer_set_hidden((Layer*)dayLayer,  hideDate);
-
-    hideDate = !hideDate;
+    if (axis == ACCEL_AXIS_X) {
+        static bool hideDate = true;
+        layer_set_hidden((Layer*)weekLayer, hideDate);
+        layer_set_hidden((Layer*)dateLayer, hideDate);
+        layer_set_hidden((Layer*)dayLayer,  hideDate);
+        hideDate = !hideDate;
+    }
+    if (axis == ACCEL_AXIS_Z) {
+        static bool blackOnWhite = true;
+        setColors(blackOnWhite);
+        blackOnWhite = !blackOnWhite;
+    }
 }
 
 void batteryStateHandler(BatteryChargeState charge)
@@ -214,7 +241,6 @@ static void setupTextLayer(Layer * rootLayer, TextLayer ** layer, GRect location
 {
     *layer = text_layer_create(location);
     text_layer_set_background_color(*layer, GColorClear);
-    text_layer_set_text_color(*layer, GColorWhite);
     text_layer_set_font(*layer, fonts_load_custom_font(fontHandle));
     text_layer_set_text_alignment(*layer, alignment);
     layer_add_child(rootLayer, (Layer*) *layer);
@@ -236,8 +262,6 @@ static void setupBitmapLayer(Layer * rootLayer, BitmapLayer ** layer, GBitmap **
 
 static void windowLoad(Window * window)
 {
-    window_set_background_color(window, GColorBlack);
-
     //Get Font
     const ResHandle fontImagine48 = resource_get_handle(RESOURCE_ID_FONT_IMAGINE_48);
     const ResHandle fontImagine24 = resource_get_handle(RESOURCE_ID_FONT_IMAGINE_24);
@@ -267,6 +291,8 @@ static void windowLoad(Window * window)
     setupBitmapLayer(rootLayer, &batteryChargingLayer,       &imgBatteryCharging,       GRect(0,168-10,18,10), RESOURCE_ID_IMAGE_BATTERY_CHARGING);
     setupBitmapLayer(rootLayer, &batteryEmptyLayer,          &imgBatteryEmpty,          GRect(0,168-10,18,10), RESOURCE_ID_IMAGE_BATTERY_EMPTY);
     setupBitmapLayer(rootLayer, &bluetoothDisconnectedLayer, &imgBluetoothDisconnected, GRect(0,168-20,15,10), RESOURCE_ID_IMAGE_BLUETOOTH_DISCONNECTED);
+
+    setColors(false);
 
     //Make sure the face is not blank
     const time_t now = time(NULL);
