@@ -104,6 +104,12 @@ static void updateTextLayersDate(const struct tm * t)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
+bool animationEnabled(struct tm * t)
+{
+    // animations are enabled between 08:00 - 00:00
+    return t->tm_hour >= 8;
+}
+
 static void animateLayerIn(TextLayer * textLayer, InverterLayer * inverterLayer, int x)
 {
     animateLayer(inverter_layer_get_layer(inverterLayer), GRect(x+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(x+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
@@ -115,6 +121,13 @@ static void animateLayerOut(TextLayer * textLayer, InverterLayer * inverterLayer
     animateLayer(text_layer_get_layer(textLayer), GRect(x, -50, 50, 60), GRect(x, TIMEY, 50, 60), 200, 100);
     animateLayer(inverter_layer_get_layer(inverterLayer), GRect(x+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(x+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
 }
+
+//59                             0                             1
+// |  1  2  3  4  5  6  7  8  9  |  1  2  3  4  5  6  7  8  9  |
+// [600              ]
+//                      [ 200 ]
+//                                  [ 200 ]
+//                                              [ 500          ]
 
 static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
 {
@@ -129,50 +142,60 @@ static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
     const int fromX = prevQ * 36;
     const int tillX = curQ  * 36;
 
+    Layer * bInvRootLayer = inverter_layer_get_layer(bottomInvLayer);
+
     static bool firstRun = true;
     if (firstRun) {
-        animateLayer(inverter_layer_get_layer(bottomInvLayer), GRect(0, SECSY, 0, 5), GRect(0, SECSY, tillX, 5), 500, 0);
+        animateLayer(bInvRootLayer, GRect(0, SECSY, 0, 5), GRect(0, SECSY, tillX, 5), 500, 0);
         firstRun = false;
     }
 
-    if(seconds == 58)
-    {
-        animateLayer(inverter_layer_get_layer(bottomInvLayer), GRect(0, SECSY, 108, 5), GRect(0, SECSY, 144, 5), 500, 1000);
-    }
+    static bool animationOutNeeded = false;
 
-    //Animations and time change
-    else if(seconds == 59)
-    {
-        //Predict next changes
-        struct tm nextTime = *t;
-        nextTime.tm_min += 1;
-        mktime(&nextTime);
-
-        const struct TimeDigits nextDigits = getTimeDigits(&nextTime);
-        if((nextDigits.h0 != prevDigits.h0)) animateLayerIn(layerH0, invLayerH0, H0X);
-        if((nextDigits.h1 != prevDigits.h1)) animateLayerIn(layerH1, invLayerH1, H1X);
-        if((nextDigits.m0 != prevDigits.m0)) animateLayerIn(layerM0, invLayerM0, M0X);
-        if((nextDigits.m1 != prevDigits.m1)) animateLayerIn(layerM1, invLayerM1, M1X);
-    }
-    else if(seconds == 0)
-    {
+    switch (seconds) {
+    case 0: {
         //Set the time off screen
         updateTextLayersTime(t);
 
-        //Animate stuff back into place
-        if((curDigits.h0 != prevDigits.h0)) animateLayerOut(layerH0, invLayerH0, H0X);
-        if((curDigits.h1 != prevDigits.h1)) animateLayerOut(layerH1, invLayerH1, H1X);
-        if((curDigits.m0 != prevDigits.m0)) animateLayerOut(layerM0, invLayerM0, M0X);
-        if((curDigits.m1 != prevDigits.m1)) animateLayerOut(layerM1, invLayerM1, M1X);
+        if (animationEnabled(t) || animationOutNeeded)
+        {
+            animationOutNeeded = false;
+            //Animate stuff back into place
+            if((curDigits.h0 != prevDigits.h0)) animateLayerOut(layerH0, invLayerH0, H0X);
+            if((curDigits.h1 != prevDigits.h1)) animateLayerOut(layerH1, invLayerH1, H1X);
+            if((curDigits.m0 != prevDigits.m0)) animateLayerOut(layerM0, invLayerM0, M0X);
+            if((curDigits.m1 != prevDigits.m1)) animateLayerOut(layerM1, invLayerM1, M1X);
+        }
 
         prevDigits = curDigits;
+        // fall through
     }
+    case 15:
+    case 30:
+    case 45:
+        animateLayer(bInvRootLayer, GRect(0, SECSY, fromX, 5), GRect(0, SECSY, tillX, 5), 500, seconds == 0 ? 500 : 0);
+        break;
+    case 58:
+        animateLayer(bInvRootLayer, GRect(0, SECSY, 108, 5), GRect(0, SECSY, 144, 5),  500, 1000);
+        break;
+    case 59: {
+        if (animationEnabled(t))
+        {
+            animationOutNeeded = true;
 
-    //Bottom suface
-    if(seconds % 15 == 0)
-    {
-        const int delay = seconds == 0 ? 500 : 0;
-        animateLayer(inverter_layer_get_layer(bottomInvLayer), GRect(0, SECSY, fromX, 5), GRect(0, SECSY, tillX, 5), 500, delay);
+            //Predict next changes
+            struct tm nextTime = *t;
+            nextTime.tm_min += 1;
+            mktime(&nextTime);
+
+            const struct TimeDigits nextDigits = getTimeDigits(&nextTime);
+            if((nextDigits.h0 != prevDigits.h0)) animateLayerIn(layerH0, invLayerH0, H0X);
+            if((nextDigits.h1 != prevDigits.h1)) animateLayerIn(layerH1, invLayerH1, H1X);
+            if((nextDigits.m0 != prevDigits.m0)) animateLayerIn(layerM0, invLayerM0, M0X);
+            if((nextDigits.m1 != prevDigits.m1)) animateLayerIn(layerM1, invLayerM1, M1X);
+        }
+        break;
+    }
     }
 
     if (unitsChanged & DAY_UNIT) {
