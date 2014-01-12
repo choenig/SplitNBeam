@@ -147,22 +147,10 @@ static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
         mktime(&nextTime);
 
         const struct TimeDigits nextDigits = getTimeDigits(&nextTime);
-
-        if((nextDigits.h0 != prevDigits.h0)) {
-            animateLayerIn(layerH0, invLayerH0, H0X);
-        }
-
-        if((nextDigits.h1 != prevDigits.h1)) {
-            animateLayerIn(layerH1, invLayerH1, H1X);
-        }
-
-        if((nextDigits.m0 != prevDigits.m0)) {
-            animateLayerIn(layerM0, invLayerM0, M0X);
-        }
-
-        if((nextDigits.m1 != prevDigits.m1)) {
-            animateLayerIn(layerM1, invLayerM1, M1X);
-        }
+        if((nextDigits.h0 != prevDigits.h0)) animateLayerIn(layerH0, invLayerH0, H0X);
+        if((nextDigits.h1 != prevDigits.h1)) animateLayerIn(layerH1, invLayerH1, H1X);
+        if((nextDigits.m0 != prevDigits.m0)) animateLayerIn(layerM0, invLayerM0, M0X);
+        if((nextDigits.m1 != prevDigits.m1)) animateLayerIn(layerM1, invLayerM1, M1X);
     }
     else if(seconds == 0)
     {
@@ -170,21 +158,10 @@ static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
         updateTextLayersTime(t);
 
         //Animate stuff back into place
-        if((curDigits.h0 != prevDigits.h0)) {
-            animateLayerOut(layerH0, invLayerH0, H0X);
-        }
-
-        if((curDigits.h1 != prevDigits.h1)) {
-            animateLayerOut(layerH1, invLayerH1, H1X);
-        }
-
-        if((curDigits.m0 != prevDigits.m0)) {
-            animateLayerOut(layerM0, invLayerM0, M0X);
-        }
-
-        if((curDigits.m1 != prevDigits.m1)) {
-            animateLayerOut(layerM1, invLayerM1, M1X);
-        }
+        if((curDigits.h0 != prevDigits.h0)) animateLayerOut(layerH0, invLayerH0, H0X);
+        if((curDigits.h1 != prevDigits.h1)) animateLayerOut(layerH1, invLayerH1, H1X);
+        if((curDigits.m0 != prevDigits.m0)) animateLayerOut(layerM0, invLayerM0, M0X);
+        if((curDigits.m1 != prevDigits.m1)) animateLayerOut(layerM1, invLayerM1, M1X);
 
         prevDigits = curDigits;
     }
