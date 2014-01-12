@@ -3,6 +3,11 @@
 
 #include <pebble.h>
 
+void layer_set_visible(Layer *layer, bool visible)
+{
+    layer_set_hidden(layer, !visible);
+}
+
 static WindowHandlers createWindowHandlers(WindowHandler load, WindowHandler unload)
 {
     WindowHandlers wh;

@@ -39,6 +39,8 @@ struct TimeDigits {
 static struct TimeDigits curDigits  = {0,0,0,0};
 static struct TimeDigits prevDigits = {0,0,0,0};
 
+static GBitmap     *imgBatteryCharging,   *imgBatteryEmpty;
+static BitmapLayer *batteryChargingLayer, *batteryEmptyLayer;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -196,6 +198,9 @@ void batteryStateHandler(BatteryChargeState charge)
     const int offset = 144 * charge.charge_percent/100;
     animateLayer(inverter_layer_get_layer(batteryLayer), GRect(0, 166, lastOffset, 2), GRect(0, 166, offset, 2), 500, 0);
     lastOffset = offset;
+
+    layer_set_visible((Layer*)batteryChargingLayer, charge.is_charging);
+    layer_set_visible((Layer*)batteryEmptyLayer,   !charge.is_charging && charge.charge_percent <= 20);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -214,6 +219,14 @@ static void setupInverterLayer(Layer * rootLayer, InverterLayer ** layer, GRect 
 {
     *layer = inverter_layer_create(location);
     layer_add_child(rootLayer, (Layer*) *layer);
+}
+
+static void setupBitmapLayer(Layer * rootLayer, BitmapLayer ** layer, GBitmap ** bitmap,  GRect location, uint32_t resourceId)
+{
+    *bitmap = gbitmap_create_with_resource(resourceId);
+    *layer = bitmap_layer_create(location);
+    bitmap_layer_set_bitmap(*layer, *bitmap);
+    layer_add_child(rootLayer, bitmap_layer_get_layer(*layer));
 }
 
 static void windowLoad(Window * window)
@@ -244,6 +257,10 @@ static void windowLoad(Window * window)
     setupInverterLayer(rootLayer, &invLayerM1,     GRect(0, 0, INV_LAYER_WIDTH, 0));
     setupInverterLayer(rootLayer, &bottomInvLayer, GRect(0, 0, 144, 0));
     setupInverterLayer(rootLayer, &batteryLayer,   GRect(0, 0, 144, 0));
+
+    //Allocate bitmap layers
+    setupBitmapLayer(rootLayer, &batteryChargingLayer, &imgBatteryCharging, GRect(0,168-10,18,10), RESOURCE_ID_IMAGE_BATTERY_CHARGING);
+    setupBitmapLayer(rootLayer, &batteryEmptyLayer,    &imgBatteryEmpty,    GRect(0,168-10,18,10), RESOURCE_ID_IMAGE_BATTERY_EMPTY);
 
     //Make sure the face is not blank
     const time_t now = time(NULL);
@@ -278,6 +295,13 @@ static void windowUnload(Window * window)
     inverter_layer_destroy(batteryLayer);
     inverter_layer_destroy(invLayerM0);
     inverter_layer_destroy(invLayerM1);
+
+    //Free bitmaps
+    gbitmap_destroy(imgBatteryCharging);
+    gbitmap_destroy(imgBatteryEmpty);
+    //Free bitmap layers
+    bitmap_layer_destroy(batteryChargingLayer);
+    bitmap_layer_destroy(batteryEmptyLayer);
 }
 
 static Window * init(void)

@@ -35,6 +35,16 @@
                 "name": "FONT_IMAGINE_10",
                 "type": "font",
                 "file": "fonts/imagine.ttf"
+            },
+            {
+                "type": "png",
+                "name": "IMAGE_BATTERY_CHARGING",
+                "file": "images/batterycharging.png"
+            },
+            {
+                "type": "png",
+                "name": "IMAGE_BATTERY_EMPTY",
+                "file": "images/batteryempty.png"
             }
         ]
     }
