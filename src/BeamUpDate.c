@@ -39,8 +39,8 @@ struct TimeDigits {
 static struct TimeDigits curDigits  = {0,0,0,0};
 static struct TimeDigits prevDigits = {0,0,0,0};
 
-static GBitmap     *imgBatteryCharging,   *imgBatteryEmpty;
-static BitmapLayer *batteryChargingLayer, *batteryEmptyLayer;
+static GBitmap     *imgBatteryCharging,   *imgBatteryEmpty,   *imgBluetoothDisconnected;
+static BitmapLayer *batteryChargingLayer, *batteryEmptyLayer, *bluetoothDisconnectedLayer;
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -203,6 +203,11 @@ void batteryStateHandler(BatteryChargeState charge)
     layer_set_visible((Layer*)batteryEmptyLayer,   !charge.is_charging && charge.charge_percent <= 20);
 }
 
+void bluetoothConnectionHandler(bool connected)
+{
+    layer_set_visible((Layer*)bluetoothDisconnectedLayer, !connected);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 static void setupTextLayer(Layer * rootLayer, TextLayer ** layer, GRect location, ResHandle fontHandle, GTextAlignment alignment)
@@ -259,8 +264,9 @@ static void windowLoad(Window * window)
     setupInverterLayer(rootLayer, &batteryLayer,   GRect(0, 0, 144, 0));
 
     //Allocate bitmap layers
-    setupBitmapLayer(rootLayer, &batteryChargingLayer, &imgBatteryCharging, GRect(0,168-10,18,10), RESOURCE_ID_IMAGE_BATTERY_CHARGING);
-    setupBitmapLayer(rootLayer, &batteryEmptyLayer,    &imgBatteryEmpty,    GRect(0,168-10,18,10), RESOURCE_ID_IMAGE_BATTERY_EMPTY);
+    setupBitmapLayer(rootLayer, &batteryChargingLayer,       &imgBatteryCharging,       GRect(0,168-10,18,10), RESOURCE_ID_IMAGE_BATTERY_CHARGING);
+    setupBitmapLayer(rootLayer, &batteryEmptyLayer,          &imgBatteryEmpty,          GRect(0,168-10,18,10), RESOURCE_ID_IMAGE_BATTERY_EMPTY);
+    setupBitmapLayer(rootLayer, &bluetoothDisconnectedLayer, &imgBluetoothDisconnected, GRect(0,168-20,15,10), RESOURCE_ID_IMAGE_BLUETOOTH_DISCONNECTED);
 
     //Make sure the face is not blank
     const time_t now = time(NULL);
@@ -272,8 +278,9 @@ static void windowLoad(Window * window)
     //Stop 'all change' on first minute
     prevDigits = curDigits;
 
-    // initial update of battery
+    // initial update of battery and bluetooth
     batteryStateHandler(battery_state_service_peek());
+    bluetoothConnectionHandler(bluetooth_connection_service_peek());
 }
 
 static void windowUnload(Window * window)
@@ -299,9 +306,12 @@ static void windowUnload(Window * window)
     //Free bitmaps
     gbitmap_destroy(imgBatteryCharging);
     gbitmap_destroy(imgBatteryEmpty);
+    gbitmap_destroy(imgBluetoothDisconnected);
+
     //Free bitmap layers
     bitmap_layer_destroy(batteryChargingLayer);
     bitmap_layer_destroy(batteryEmptyLayer);
+    bitmap_layer_destroy(bluetoothDisconnectedLayer);
 }
 
 static Window * init(void)
@@ -313,6 +323,7 @@ static Window * init(void)
     tick_timer_service_subscribe(SECOND_UNIT, tickTimerHandler);
     accel_tap_service_subscribe(accelTapHandler);
     battery_state_service_subscribe(batteryStateHandler);
+    bluetooth_connection_service_subscribe(bluetoothConnectionHandler);
 
     //Finally
     window_stack_push(window, true);
@@ -326,6 +337,7 @@ static void deinit(Window * window)
     tick_timer_service_unsubscribe();
     accel_tap_service_unsubscribe();
     battery_state_service_unsubscribe();
+    bluetooth_connection_service_unsubscribe();
 
     window_destroy(window);
 }

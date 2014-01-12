@@ -45,6 +45,11 @@
                 "type": "png",
                 "name": "IMAGE_BATTERY_EMPTY",
                 "file": "images/batteryempty.png"
+            },
+            {
+                "type": "png",
+                "name": "IMAGE_BLUETOOTH_DISCONNECTED",
+                "file": "images/bluetoothdisconnected.png"
             }
         ]
     }
