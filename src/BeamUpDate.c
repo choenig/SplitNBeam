@@ -7,7 +7,8 @@
 #include <pebble.h>
 #include "pebbleapi.h"
 
-#define DEBUG false
+//#define CUSTOM_TIME "23:59:10"
+#include "customtime.h"
 
 #define INV_LAYER_WIDTH 30
 #define INV_LAYER_HEIGHT 101
@@ -37,6 +38,7 @@ struct TimeDigits {
 
 static struct TimeDigits curDigits  = {0,0,0,0};
 static struct TimeDigits prevDigits = {0,0,0,0};
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -71,15 +73,6 @@ static void updateTextLayersTime(const struct tm * t)
     HUText[0] = '0' + curDigits.h1;
     MTText[0] = '0' + curDigits.m0;
     MUText[0] = '0' + curDigits.m1;
-
-    //Fix digits for debugging purposes
-    if(DEBUG)
-    {
-        HTText[0] = '2';
-        HUText[0] = '3';
-        MTText[0] = '5';
-        MUText[0] = '9';
-    }
 
     //Set digits in TextLayers
     text_layer_set_text(layerH0, HTText);
@@ -123,6 +116,8 @@ static void animateLayerOut(TextLayer * textLayer, InverterLayer * inverterLayer
 
 static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
 {
+    ADJUST_TIME_TO_CUSTOM_TIME(t);
+
     //Get the time
     const int seconds = t->tm_sec;
 
@@ -153,19 +148,19 @@ static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
 
         const struct TimeDigits nextDigits = getTimeDigits(&nextTime);
 
-        if((nextDigits.h0 != prevDigits.h0) || (DEBUG)) {
+        if((nextDigits.h0 != prevDigits.h0)) {
             animateLayerIn(layerH0, invLayerH0, H0X);
         }
 
-        if((nextDigits.h1 != prevDigits.h1) || (DEBUG)) {
+        if((nextDigits.h1 != prevDigits.h1)) {
             animateLayerIn(layerH1, invLayerH1, H1X);
         }
 
-        if((nextDigits.m0 != prevDigits.m0) || (DEBUG)) {
+        if((nextDigits.m0 != prevDigits.m0)) {
             animateLayerIn(layerM0, invLayerM0, M0X);
         }
 
-        if((nextDigits.m1 != prevDigits.m1) || (DEBUG)) {
+        if((nextDigits.m1 != prevDigits.m1)) {
             animateLayerIn(layerM1, invLayerM1, M1X);
         }
     }
@@ -175,19 +170,19 @@ static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
         updateTextLayersTime(t);
 
         //Animate stuff back into place
-        if((curDigits.h0 != prevDigits.h0) || (DEBUG)) {
+        if((curDigits.h0 != prevDigits.h0)) {
             animateLayerOut(layerH0, invLayerH0, H0X);
         }
 
-        if((curDigits.h1 != prevDigits.h1) || (DEBUG)) {
+        if((curDigits.h1 != prevDigits.h1)) {
             animateLayerOut(layerH1, invLayerH1, H1X);
         }
 
-        if((curDigits.m0 != prevDigits.m0) || (DEBUG)) {
+        if((curDigits.m0 != prevDigits.m0)) {
             animateLayerOut(layerM0, invLayerM0, M0X);
         }
 
-        if((curDigits.m1 != prevDigits.m1) || (DEBUG)) {
+        if((curDigits.m1 != prevDigits.m1)) {
             animateLayerOut(layerM1, invLayerM1, M1X);
         }
 
@@ -275,7 +270,8 @@ static void windowLoad(Window * window)
 
     //Make sure the face is not blank
     const time_t now = time(NULL);
-    const struct tm * t = localtime(&now);
+    struct tm * t = localtime(&now);
+    ADJUST_TIME_TO_CUSTOM_TIME(t);
     updateTextLayersTime(t);
     updateTextLayersDate(t);
 
