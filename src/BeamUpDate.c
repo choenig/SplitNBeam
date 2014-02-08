@@ -12,10 +12,10 @@
 
 #define INV_LAYER_WIDTH 30
 #define INV_LAYER_HEIGHT 101
-#define TIMEY 53
-#define SECSY 105
-#define DATEY 105
-#define DAYY DATEY + 26
+#define TIMEY 43
+#define SECSY TIMEY + 52
+#define DATEY 118
+#define DAYY DATEY + 22
 #define H0X -12
 #define H1X  22
 #define M0X  64
@@ -309,7 +309,7 @@ static void windowLoad(Window * window)
     setupTextLayer(rootLayer, &colonLayer, GRect(69,  TIMEY-6, 50, 60), fontImagine48, GTextAlignmentLeft);
     setupTextLayer(rootLayer, &layerM0,    GRect(M0X, TIMEY,   50, 60), fontImagine48, GTextAlignmentRight);
     setupTextLayer(rootLayer, &layerM1,    GRect(M1X, TIMEY,   50, 60), fontImagine48, GTextAlignmentRight);
-    setupTextLayer(rootLayer, &weekLayer,  GRect( 0,  DATEY,   30, 30), fontImagine10, GTextAlignmentLeft);
+    setupTextLayer(rootLayer, &weekLayer,  GRect( 2,  DATEY+3, 30, 30), fontImagine10, GTextAlignmentLeft);
     setupTextLayer(rootLayer, &dateLayer,  GRect(30,  DATEY,  114, 30), fontImagine24, GTextAlignmentRight);
     setupTextLayer(rootLayer, &dayLayer,   GRect(-20, DAYY,  158, 30), fontImagine18, GTextAlignmentRight);
 
