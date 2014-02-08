@@ -95,7 +95,7 @@ static void updateTextLayersDate(const struct tm * t)
 
     // calender week
     static char weekText[] = "KW\nxx";
-    strftime(weekText, sizeof(weekText), "KW\n%V.", t);	//KW26
+    strftime(weekText, sizeof(weekText), "KW\n%V", t);	//KW26
     text_layer_set_text(weekLayer, weekText);
 
     // day
