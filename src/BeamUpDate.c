@@ -16,6 +16,7 @@
 #define SECSY TIMEY + 52
 #define DATEY 118
 #define DAYY DATEY + 22
+#define BOTTOMY SECSY + 6
 #define H0X -12
 #define H1X  22
 #define M0X  64
@@ -28,6 +29,7 @@ static TextLayer     *layerH0,    *layerH1,    *layerM0,    *layerM1;
 static InverterLayer *invLayerH0, *invLayerH1, *invLayerM0, *invLayerM1;
 static InverterLayer *secondsBarInvLayer;
 static InverterLayer *batteryLayer;
+static InverterLayer *bottomInvLayer;
 
 struct TimeDigits {
     int h0;
@@ -320,6 +322,7 @@ static void windowLoad(Window * window)
     setupInverterLayer(rootLayer, &invLayerM1,     GRect(0, 0, INV_LAYER_WIDTH, 0));
     setupInverterLayer(rootLayer, &secondsBarInvLayer, GRect(0, 0, 144, 0));
     setupInverterLayer(rootLayer, &batteryLayer,   GRect(0, 0, 144, 0));
+    setupInverterLayer(rootLayer, &bottomInvLayer, GRect(0, BOTTOMY, 144, 168-BOTTOMY));
 
     //Allocate bitmap layers
     setupBitmapLayer(rootLayer, &batteryChargingLayer,       &imgBatteryCharging,       GRect(0,168-10,18,10), RESOURCE_ID_IMAGE_BATTERY_CHARGING);
@@ -362,6 +365,7 @@ static void windowUnload(Window * window)
     inverter_layer_destroy(batteryLayer);
     inverter_layer_destroy(invLayerM0);
     inverter_layer_destroy(invLayerM1);
+    inverter_layer_destroy(bottomInvLayer);
 
     //Free bitmaps
     gbitmap_destroy(imgBatteryCharging);
