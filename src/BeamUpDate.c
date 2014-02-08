@@ -230,7 +230,7 @@ static void setColors(bool blackOnWhite)
     text_layer_set_text_color(dateLayer,  textColor);
     text_layer_set_text_color(dayLayer,   textColor);
 
-    const GCompOp mode = blackOnWhite ? GCompOpAssignInverted : GCompOpAssign;
+    const GCompOp mode = blackOnWhite ? GCompOpAssign : GCompOpAssignInverted;
     bitmap_layer_set_compositing_mode(batteryChargingLayer,       mode);
     bitmap_layer_set_compositing_mode(batteryEmptyLayer,          mode);
     bitmap_layer_set_compositing_mode(bluetoothDisconnectedLayer, mode);
