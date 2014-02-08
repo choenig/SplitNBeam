@@ -26,7 +26,7 @@
 static TextLayer     *colonLayer, *weekLayer, *dateLayer, *dayLayer;
 static TextLayer     *layerH0,    *layerH1,    *layerM0,    *layerM1;
 static InverterLayer *invLayerH0, *invLayerH1, *invLayerM0, *invLayerM1;
-static InverterLayer *bottomInvLayer;
+static InverterLayer *secondsBarInvLayer;
 static InverterLayer *batteryLayer;
 
 struct TimeDigits {
@@ -142,11 +142,11 @@ static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
     const int fromX = prevQ * 36;
     const int tillX = curQ  * 36;
 
-    Layer * bInvRootLayer = inverter_layer_get_layer(bottomInvLayer);
+    Layer * secondsBarInvRootLayer = inverter_layer_get_layer(secondsBarInvLayer);
 
     static bool firstRun = true;
     if (firstRun) {
-        animateLayer(bInvRootLayer, GRect(0, SECSY, 0, 5), GRect(0, SECSY, tillX, 5), 500, 0);
+        animateLayer(secondsBarInvRootLayer, GRect(0, SECSY, 0, 5), GRect(0, SECSY, tillX, 5), 500, 0);
         firstRun = false;
     }
 
@@ -173,10 +173,10 @@ static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
     case 15:
     case 30:
     case 45:
-        animateLayer(bInvRootLayer, GRect(0, SECSY, fromX, 5), GRect(0, SECSY, tillX, 5), 500, seconds == 0 ? 500 : 0);
+        animateLayer(secondsBarInvRootLayer, GRect(0, SECSY, fromX, 5), GRect(0, SECSY, tillX, 5), 500, seconds == 0 ? 500 : 0);
         break;
     case 58:
-        animateLayer(bInvRootLayer, GRect(0, SECSY, 108, 5), GRect(0, SECSY, 144, 5),  500, 1000);
+        animateLayer(secondsBarInvRootLayer, GRect(0, SECSY, 108, 5), GRect(0, SECSY, 144, 5),  500, 1000);
         break;
     case 59: {
         if (animationEnabled(t))
@@ -308,7 +308,7 @@ static void windowLoad(Window * window)
     setupInverterLayer(rootLayer, &invLayerH1,     GRect(0, 0, INV_LAYER_WIDTH, 0));
     setupInverterLayer(rootLayer, &invLayerM0,     GRect(0, 0, INV_LAYER_WIDTH, 0));
     setupInverterLayer(rootLayer, &invLayerM1,     GRect(0, 0, INV_LAYER_WIDTH, 0));
-    setupInverterLayer(rootLayer, &bottomInvLayer, GRect(0, 0, 144, 0));
+    setupInverterLayer(rootLayer, &secondsBarInvLayer, GRect(0, 0, 144, 0));
     setupInverterLayer(rootLayer, &batteryLayer,   GRect(0, 0, 144, 0));
 
     //Allocate bitmap layers
@@ -348,7 +348,7 @@ static void windowUnload(Window * window)
     //Free inverter layers
     inverter_layer_destroy(invLayerH0);
     inverter_layer_destroy(invLayerH1);
-    inverter_layer_destroy(bottomInvLayer);
+    inverter_layer_destroy(secondsBarInvLayer);
     inverter_layer_destroy(batteryLayer);
     inverter_layer_destroy(invLayerM0);
     inverter_layer_destroy(invLayerM1);
