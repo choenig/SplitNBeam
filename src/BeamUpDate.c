@@ -201,10 +201,10 @@ static void setColors(bool blackOnWhite)
     bitmap_layer_set_compositing_mode(bluetoothDisconnectedLayer, mode);
 }
 
+#if 0
 void accelTapHandler(AccelAxisType axis, int32_t direction)
 {
-//    app_log(APP_LOG_LEVEL_DEBUG, "", 0, "%d %d", (int)axis, (int)direction);
-
+    app_log(APP_LOG_LEVEL_DEBUG, __FILE__, __LINE__, "accelTapHandler(): %d %d", (int)axis, (int)direction);
     if (axis == ACCEL_AXIS_X) {
         static bool hideDate = true;
         layer_set_hidden((Layer*)weekLayer, hideDate);
@@ -218,6 +218,7 @@ void accelTapHandler(AccelAxisType axis, int32_t direction)
         blackOnWhite = !blackOnWhite;
     }
 }
+#endif
 
 void batteryStateHandler(BatteryChargeState charge)
 {
@@ -347,7 +348,7 @@ static Window * init(void)
 
     //Subscribe to events
     tick_timer_service_subscribe(SECOND_UNIT, tickTimerHandler);
-    accel_tap_service_subscribe(accelTapHandler);
+    //accel_tap_service_subscribe(accelTapHandler);
     battery_state_service_subscribe(batteryStateHandler);
     bluetooth_connection_service_subscribe(bluetoothConnectionHandler);
 
@@ -361,7 +362,7 @@ static void deinit(Window * window)
 {
     //Unsubscribe from events
     tick_timer_service_unsubscribe();
-    accel_tap_service_unsubscribe();
+    //accel_tap_service_unsubscribe();
     battery_state_service_unsubscribe();
     bluetooth_connection_service_unsubscribe();
 
