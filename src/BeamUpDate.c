@@ -242,9 +242,9 @@ void accelTapHandler(AccelAxisType axis, int32_t direction)
     app_log(APP_LOG_LEVEL_DEBUG, __FILE__, __LINE__, "accelTapHandler(): %d %d", (int)axis, (int)direction);
     if (axis == ACCEL_AXIS_X) {
         static bool hideDate = true;
-        layer_set_hidden((Layer*)weekLayer, hideDate);
-        layer_set_hidden((Layer*)dateLayer, hideDate);
-        layer_set_hidden((Layer*)dayLayer,  hideDate);
+        layer_set_hidden(text_layer_get_layer(weekLayer), hideDate);
+        layer_set_hidden(text_layer_get_layer(dateLayer), hideDate);
+        layer_set_hidden(text_layer_get_layer(dayLayer),  hideDate);
         hideDate = !hideDate;
     }
     if (axis == ACCEL_AXIS_Z) {
@@ -262,13 +262,13 @@ void batteryStateHandler(BatteryChargeState charge)
     animateLayer(inverter_layer_get_layer(batteryLayer), GRect(0, 166, lastOffset, 2), GRect(0, 166, offset, 2), 500, 0);
     lastOffset = offset;
 
-    layer_set_visible((Layer*)batteryChargingLayer, charge.is_charging);
-    layer_set_visible((Layer*)batteryEmptyLayer,   !charge.is_charging && charge.charge_percent <= 20);
+    layer_set_visible(bitmap_layer_get_layer(batteryChargingLayer), charge.is_charging);
+    layer_set_visible(bitmap_layer_get_layer(batteryEmptyLayer),   !charge.is_charging && charge.charge_percent <= 20);
 }
 
 void bluetoothConnectionHandler(bool connected)
 {
-    layer_set_visible((Layer*)bluetoothDisconnectedLayer, !connected);
+    layer_set_visible(bitmap_layer_get_layer(bluetoothDisconnectedLayer), !connected);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
@@ -279,13 +279,13 @@ static void setupTextLayer(Layer * rootLayer, TextLayer ** layer, GRect location
     text_layer_set_background_color(*layer, GColorClear);
     text_layer_set_font(*layer, fonts_load_custom_font(fontHandle));
     text_layer_set_text_alignment(*layer, alignment);
-    layer_add_child(rootLayer, (Layer*) *layer);
+    layer_add_child(rootLayer, text_layer_get_layer(*layer));
 }
 
 static void setupInverterLayer(Layer * rootLayer, InverterLayer ** layer, GRect location)
 {
     *layer = inverter_layer_create(location);
-    layer_add_child(rootLayer, (Layer*) *layer);
+    layer_add_child(rootLayer, inverter_layer_get_layer(*layer));
 }
 
 static void setupBitmapLayer(Layer * rootLayer, BitmapLayer ** layer, GBitmap ** bitmap,  GRect location, uint32_t resourceId)
