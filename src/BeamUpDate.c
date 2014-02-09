@@ -62,24 +62,24 @@ static void updateTextLayersTime(const struct tm * t)
 {
     curDigits = getTimeDigits(t);
 
-    static char HTText[] = "0";
-    static char HUText[] = "0";
+    static char h0Char[]    = "0";
+    static char h1Char[]    = "0";
     static char colonText[] = ":";
-    static char MTText[] = "0";
-    static char MUText[] = "0";
+    static char m0Char[]    = "0";
+    static char m1Char[]    = "0";
 
     //Copy digits
-    HTText[0] = '0' + curDigits.h0;
-    HUText[0] = '0' + curDigits.h1;
-    MTText[0] = '0' + curDigits.m0;
-    MUText[0] = '0' + curDigits.m1;
+    h0Char[0] = '0' + curDigits.h0;
+    h1Char[0] = '0' + curDigits.h1;
+    m0Char[0] = '0' + curDigits.m0;
+    m1Char[0] = '0' + curDigits.m1;
 
     //Set digits in TextLayers
-    text_layer_set_text(layerH0, HTText);
-    text_layer_set_text(layerH1, HUText);
+    text_layer_set_text(layerH0,    h0Char);
+    text_layer_set_text(layerH1,    h1Char);
     text_layer_set_text(colonLayer, colonText);
-    text_layer_set_text(layerM0, MTText);
-    text_layer_set_text(layerM1, MUText);
+    text_layer_set_text(layerM0,    m0Char);
+    text_layer_set_text(layerM1,    m1Char);
 }
 
 const char * DAY_NAME_GERMAN[] = {"Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"};
