@@ -158,10 +158,10 @@ static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
         {
             animationOutNeeded = false;
             //Animate stuff back into place
-            if((curDigits.h0 != prevDigits.h0)) animateLayerOut(layerH0, invLayerH0, H0X);
-            if((curDigits.h1 != prevDigits.h1)) animateLayerOut(layerH1, invLayerH1, H1X);
-            if((curDigits.m0 != prevDigits.m0)) animateLayerOut(layerM0, invLayerM0, M0X);
-            if((curDigits.m1 != prevDigits.m1)) animateLayerOut(layerM1, invLayerM1, M1X);
+            if(curDigits.h0 != prevDigits.h0) animateLayerOut(layerH0, invLayerH0, H0X);
+            if(curDigits.h1 != prevDigits.h1) animateLayerOut(layerH1, invLayerH1, H1X);
+            if(curDigits.m0 != prevDigits.m0) animateLayerOut(layerM0, invLayerM0, M0X);
+            if(curDigits.m1 != prevDigits.m1) animateLayerOut(layerM1, invLayerM1, M1X);
         }
 
         prevDigits = curDigits;
