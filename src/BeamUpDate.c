@@ -11,7 +11,7 @@
 #include "customtime.h"
 
 #define INV_LAYER_WIDTH 30
-#define INV_LAYER_HEIGHT 101
+#define INV_LAYER_HEIGHT 95
 #define TIMEY 43
 #define SECSY TIMEY + 52
 #define DATEY 118
