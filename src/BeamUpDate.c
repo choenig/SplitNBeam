@@ -48,15 +48,11 @@ static BitmapLayer *batteryChargingLayer, *batteryEmptyLayer, *bluetoothDisconne
 
 struct TimeDigits getTimeDigits(const struct tm * t)
 {
-    char txt[] = "0000";
-    strftime(txt, sizeof(txt), clock_is_24h_style() ? "%H%M" : "%I%M", t);
-
-    //Get digits
     struct TimeDigits retval;
-    retval.h0 = txt[0] - '0';
-    retval.h1 = txt[1] - '0';
-    retval.m0 = txt[2] - '0';
-    retval.m1 = txt[3] - '0';
+    retval.h0 = (t->tm_hour) / 10;
+    retval.h1 = (t->tm_hour) % 10;
+    retval.m0 = (t->tm_min ) / 10;
+    retval.m1 = (t->tm_min ) % 10;
     return retval;
 }
 
