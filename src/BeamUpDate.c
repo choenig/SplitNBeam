@@ -38,7 +38,6 @@ struct TimeDigits {
     int m1;
 };
 
-static struct TimeDigits curDigits  = {0,0,0,0};
 static struct TimeDigits prevDigits = {0,0,0,0};
 
 static GBitmap     *imgBatteryCharging,   *imgBatteryEmpty,   *imgBluetoothDisconnected;
@@ -58,10 +57,8 @@ struct TimeDigits getTimeDigits(const struct tm * t)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-static void updateTextLayersTime(const struct tm * t)
+static void updateTextLayersTime(const struct tm * t, struct TimeDigits * curDigits)
 {
-    curDigits = getTimeDigits(t);
-
     static char h0Char[]    = "0";
     static char h1Char[]    = "0";
     static char colonText[] = ":";
@@ -69,10 +66,11 @@ static void updateTextLayersTime(const struct tm * t)
     static char m1Char[]    = "0";
 
     //Copy digits
-    h0Char[0] = '0' + curDigits.h0;
-    h1Char[0] = '0' + curDigits.h1;
-    m0Char[0] = '0' + curDigits.m0;
-    m1Char[0] = '0' + curDigits.m1;
+    *curDigits = getTimeDigits(t);
+    h0Char[0] = '0' + curDigits->h0;
+    h1Char[0] = '0' + curDigits->h1;
+    m0Char[0] = '0' + curDigits->m0;
+    m1Char[0] = '0' + curDigits->m1;
 
     //Set digits in TextLayers
     text_layer_set_text(layerH0,    h0Char);
@@ -153,7 +151,8 @@ static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
     switch (seconds) {
     case 0: {
         //Set the time off screen
-        updateTextLayersTime(t);
+        struct TimeDigits curDigits;
+        updateTextLayersTime(t, &curDigits);
 
         if (animationEnabled(t) || animationOutNeeded)
         {
@@ -331,7 +330,9 @@ static void windowLoad(Window * window)
     const time_t now = time(NULL);
     struct tm * t = localtime(&now);
     ADJUST_TIME_TO_CUSTOM_TIME(t);
-    updateTextLayersTime(t);
+
+    struct TimeDigits curDigits;
+    updateTextLayersTime(t, &curDigits);
     updateTextLayersDate(t);
 
     //Stop 'all change' on first minute
