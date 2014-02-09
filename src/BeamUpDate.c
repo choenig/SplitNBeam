@@ -38,8 +38,6 @@ struct TimeDigits {
     int m1;
 };
 
-static struct TimeDigits prevDigits = {0,0,0,0};
-
 static GBitmap     *imgBatteryCharging,   *imgBatteryEmpty,   *imgBluetoothDisconnected;
 static BitmapLayer *batteryChargingLayer, *batteryEmptyLayer, *bluetoothDisconnectedLayer;
 
@@ -57,7 +55,7 @@ struct TimeDigits getTimeDigits(const struct tm * t)
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-static void updateTextLayersTime(const struct tm * t, struct TimeDigits * curDigits)
+static void updateTextLayersTime(const struct tm * t)
 {
     static char h0Char[]    = "0";
     static char h1Char[]    = "0";
@@ -66,11 +64,11 @@ static void updateTextLayersTime(const struct tm * t, struct TimeDigits * curDig
     static char m1Char[]    = "0";
 
     //Copy digits
-    *curDigits = getTimeDigits(t);
-    h0Char[0] = '0' + curDigits->h0;
-    h1Char[0] = '0' + curDigits->h1;
-    m0Char[0] = '0' + curDigits->m0;
-    m1Char[0] = '0' + curDigits->m1;
+    const struct TimeDigits curDigits = getTimeDigits(t);
+    h0Char[0] = '0' + curDigits.h0;
+    h1Char[0] = '0' + curDigits.h1;
+    m0Char[0] = '0' + curDigits.m0;
+    m1Char[0] = '0' + curDigits.m1;
 
     //Set digits in TextLayers
     text_layer_set_text(layerH0,    h0Char);
@@ -106,16 +104,19 @@ bool animationEnabled(struct tm * t)
     return t->tm_hour >= 8;
 }
 
-static void animateLayerIn(TextLayer * textLayer, InverterLayer * inverterLayer, int x)
+static void animateLayerIn(bool * needsAnimationOut, TextLayer * textLayer, InverterLayer * inverterLayer, int x)
 {
     animateLayer(inverter_layer_get_layer(inverterLayer), GRect(x+OFFSET, 0, INV_LAYER_WIDTH, 0), GRect(x+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), 600, 0);
     animateLayer(text_layer_get_layer(textLayer), GRect(x, TIMEY, 50, 60), GRect(x, -50, 50, 60), 200, 700);
+    *needsAnimationOut = true;
 }
 
-static void animateLayerOut(TextLayer * textLayer, InverterLayer * inverterLayer, int x)
+static void animateLayerOut(bool * needsAnimationOut, TextLayer * textLayer, InverterLayer * inverterLayer, int x)
 {
+    if (!*needsAnimationOut) return;
     animateLayer(text_layer_get_layer(textLayer), GRect(x, -50, 50, 60), GRect(x, TIMEY, 50, 60), 200, 100);
     animateLayer(inverter_layer_get_layer(inverterLayer), GRect(x+OFFSET, 0, INV_LAYER_WIDTH, INV_LAYER_HEIGHT), GRect(x+OFFSET, 0, INV_LAYER_WIDTH, 0), 500, 500);
+    *needsAnimationOut = false;
 }
 
 //59                             0                             1
@@ -146,25 +147,20 @@ static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
         firstRun = false;
     }
 
-    static bool animationOutNeeded = false;
+    static bool animationOutNeededH0 = false;
+    static bool animationOutNeededH1 = false;
+    static bool animationOutNeededM0 = false;
+    static bool animationOutNeededM1 = false;
 
     switch (seconds) {
     case 0: {
         //Set the time off screen
-        struct TimeDigits curDigits;
-        updateTextLayersTime(t, &curDigits);
+        updateTextLayersTime(t);
 
-        if (animationEnabled(t) || animationOutNeeded)
-        {
-            animationOutNeeded = false;
-            //Animate stuff back into place
-            if(curDigits.h0 != prevDigits.h0) animateLayerOut(layerH0, invLayerH0, H0X);
-            if(curDigits.h1 != prevDigits.h1) animateLayerOut(layerH1, invLayerH1, H1X);
-            if(curDigits.m0 != prevDigits.m0) animateLayerOut(layerM0, invLayerM0, M0X);
-            if(curDigits.m1 != prevDigits.m1) animateLayerOut(layerM1, invLayerM1, M1X);
-        }
-
-        prevDigits = curDigits;
+        animateLayerOut(&animationOutNeededH0, layerH0, invLayerH0, H0X);
+        animateLayerOut(&animationOutNeededH1, layerH1, invLayerH1, H1X);
+        animateLayerOut(&animationOutNeededM0, layerM0, invLayerM0, M0X);
+        animateLayerOut(&animationOutNeededM1, layerM1, invLayerM1, M1X);
         // fall through
     }
     case 15:
@@ -178,8 +174,6 @@ static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
     case 59: {
         if (animationEnabled(t))
         {
-            animationOutNeeded = true;
-
             //Predict next changes
             struct tm nextTime;
             //memset(&nextTime, 0, sizeof(struct tm));
@@ -194,12 +188,12 @@ static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
             }
             // crashes on pebble
             //mktime(&nextTime);
-
+            const struct TimeDigits curDigits  = getTimeDigits(t);
             const struct TimeDigits nextDigits = getTimeDigits(&nextTime);
-            if((nextDigits.h0 != prevDigits.h0)) animateLayerIn(layerH0, invLayerH0, H0X);
-            if((nextDigits.h1 != prevDigits.h1)) animateLayerIn(layerH1, invLayerH1, H1X);
-            if((nextDigits.m0 != prevDigits.m0)) animateLayerIn(layerM0, invLayerM0, M0X);
-            if((nextDigits.m1 != prevDigits.m1)) animateLayerIn(layerM1, invLayerM1, M1X);
+            if((nextDigits.h0 != curDigits.h0)) animateLayerIn(&animationOutNeededH0, layerH0, invLayerH0, H0X);
+            if((nextDigits.h1 != curDigits.h1)) animateLayerIn(&animationOutNeededH1, layerH1, invLayerH1, H1X);
+            if((nextDigits.m0 != curDigits.m0)) animateLayerIn(&animationOutNeededM0, layerM0, invLayerM0, M0X);
+            if((nextDigits.m1 != curDigits.m1)) animateLayerIn(&animationOutNeededM1, layerM1, invLayerM1, M1X);
         }
         break;
     }
@@ -330,13 +324,8 @@ static void windowLoad(Window * window)
     const time_t now = time(NULL);
     struct tm * t = localtime(&now);
     ADJUST_TIME_TO_CUSTOM_TIME(t);
-
-    struct TimeDigits curDigits;
-    updateTextLayersTime(t, &curDigits);
+    updateTextLayersTime(t);
     updateTextLayersDate(t);
-
-    //Stop 'all change' on first minute
-    prevDigits = curDigits;
 
     // initial update of battery and bluetooth
     batteryStateHandler(battery_state_service_peek());
