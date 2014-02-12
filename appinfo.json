@@ -1,34 +1,31 @@
 {
-    "versionLabel": "2.0.0",
-    "uuid": "5264ce58-0164-4481-8eda-e08b2b2db822",
-    "appKeys": {
-        "dummy": 0
-    },
-    "longName": "Beam Up Date",
-    "versionCode": 2,
-    "shortName": "BeamUpDate",
-    "companyName": "Chris Lewis",
+    "uuid": "f003a82c-ffad-4df1-8b82-5a4bd8db3370",
+    "longName": "Split 'n' Beam",
+    "shortName": "SpitNBeam",
+    "versionCode": 1,
+    "versionLabel": "1.0.0",
+    "companyName": "Christian Hoenig",
     "watchapp": {
         "watchface": true
     },
     "resources": {
         "media": [
             {
-              "type": "font",
-              "name": "FONT_IMAGINE_48",
-              "file": "fonts/imagine.ttf"
+                "menuIcon": true,
+                "type": "png",
+                "name": "IMAGE_MENU_ICON",
+                "file": "images/menu_icon.png"
             },
             {
-              "menuIcon": true,
-              "type": "png",
-              "name": "IMAGE_MENU_ICON",
-              "file": "images/menu_icon.png"
-            },
+                "type": "font",
+                "name": "FONT_IMAGINE_48",
+                "file": "fonts/imagine.ttf"
+                },
             {
-			        "name": "FONT_IMAGINE_24",
-			        "type": "font",
-			        "file": "fonts/imagine.ttf"
-        		}
+                "name": "FONT_IMAGINE_24",
+                "type": "font",
+                "file": "fonts/imagine.ttf"
+            }
         ]
     }
 }
