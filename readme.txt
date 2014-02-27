@@ -4,6 +4,13 @@
 This watchface is a fork of Chris Lewis' wonderfull 'Beam Um Date' watchface
 which can be found here: https://github.com/C-D-Lewis/beam-up-date.
 
+'Split and Beam' extends the Beam-Technology found in 'Beam Up Date' by some
+nice features:
+  * date, day of week and week number in german format
+  * small battery indicator bar at the bottom
+  * icons for bluetooth disconnect, low battery (<20%) and charging
+  * less animations between 00:00 and 08:00 for powersaving
+
 License information for 'Split and Beam' Pebble watchface:
 **********************************************************
 Copyright (c) 2013, 2014 Christian Hoenig
