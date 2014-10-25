@@ -3,7 +3,7 @@
     "longName": "Split 'n' Beam",
     "shortName": "SpitNBeam",
     "versionCode": 1,
-    "versionLabel": "1.0.0",
+    "versionLabel": "1.0",
     "companyName": "Christian Hoenig",
     "watchapp": {
         "watchface": true
