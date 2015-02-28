@@ -1,7 +1,8 @@
 /**
- * Beam Up Date Pebble Watchface
- * Author: Chris Lewis
- * Date: 31st December 2013
+ * Split'n'Beam Pebble Watchface
+ * Author: Christian Hoenig
+ * Based on work of: Chris Lewis (31st December 2013)
+ * (c) 2015 Christian Hoenig
  */
 
 #include <pebble.h>
