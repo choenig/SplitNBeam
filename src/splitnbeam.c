@@ -306,9 +306,9 @@ static void windowLoad(Window * window)
     setupInverterLayer(rootLayer, &bottomInvLayer, GRect(0, BOTTOMY, 144, 168-BOTTOMY));
 
     //Allocate bitmap layers
-    setupBitmapLayer(rootLayer, &batteryChargingLayer,       &imgBatteryCharging,       GRect(0,168-10,18,10), RESOURCE_ID_IMAGE_BATTERY_CHARGING);
-    setupBitmapLayer(rootLayer, &batteryEmptyLayer,          &imgBatteryEmpty,          GRect(0,168-10,18,10), RESOURCE_ID_IMAGE_BATTERY_EMPTY);
-    setupBitmapLayer(rootLayer, &bluetoothDisconnectedLayer, &imgBluetoothDisconnected, GRect(0,168-20,15,10), RESOURCE_ID_IMAGE_BLUETOOTH_DISCONNECTED);
+    setupBitmapLayer(rootLayer, &batteryChargingLayer,       &imgBatteryCharging,       GRect(0,168-10-2,18,10), RESOURCE_ID_IMAGE_BATTERY_CHARGING);
+    setupBitmapLayer(rootLayer, &batteryEmptyLayer,          &imgBatteryEmpty,          GRect(0,168-10-2,18,10), RESOURCE_ID_IMAGE_BATTERY_EMPTY);
+    setupBitmapLayer(rootLayer, &bluetoothDisconnectedLayer, &imgBluetoothDisconnected, GRect(0,168-20-2,15,10), RESOURCE_ID_IMAGE_BLUETOOTH_DISCONNECTED);
 
     setColors(false);
 
