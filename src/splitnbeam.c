@@ -175,19 +175,10 @@ static void tickTimerHandler(struct tm * t, TimeUnits unitsChanged)
         if (animationEnabled(t))
         {
             //Predict next changes
-            struct tm nextTime;
-            //memset(&nextTime, 0, sizeof(struct tm));
-            nextTime = *t;
+            struct tm nextTime = *t;
             nextTime.tm_min += 1;
-            if (nextTime.tm_min >= 60) {
-                nextTime.tm_min = 0;
-                nextTime.tm_hour += 1;
-                if (nextTime.tm_hour >= 24) {
-                    nextTime.tm_hour = 0;
-                }
-            }
-            // crashes on pebble
-            //mktime(&nextTime);
+            mktime(&nextTime);
+
             const struct TimeDigits curDigits  = getTimeDigits(t);
             const struct TimeDigits nextDigits = getTimeDigits(&nextTime);
             if((nextDigits.h0 != curDigits.h0)) animateLayerIn(&animationOutNeededH0, layerH0, invLayerH0, H0X);
